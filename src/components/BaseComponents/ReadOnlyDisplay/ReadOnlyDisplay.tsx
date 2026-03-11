@@ -3,8 +3,15 @@ import PropTypes from 'prop-types';
 
 export default function ReadOnlyDisplay(props) {
   const COMMA_DELIMITED_FIELD = 'CSV';
-  const { label, value, name } = props;
+  const { label, value, name, placeholder, helperText } = props;
   const [formattedValue, setFormattedValue] = useState<string | []>(value);
+  const formattedValueOrValue = formattedValue || value;
+  const placeholderOrHelperText = placeholder || helperText;
+  let cyValue = formattedValueOrValue;
+  let hintValue = '';
+  if (!Array.isArray(formattedValueOrValue) && formattedValueOrValue?.includes('!!hint!!')) {
+    [cyValue, hintValue] = formattedValueOrValue.split('!!hint!!');
+  }
 
   useEffect(() => {
     if (name && name.indexOf(COMMA_DELIMITED_FIELD) !== -1 && value.indexOf(',') !== -1) {
@@ -25,7 +32,14 @@ export default function ReadOnlyDisplay(props) {
             ))}
           </ul>
         ) : (
-          formattedValue || value
+          <>
+            <>{cyValue}</>
+            {hintValue && (
+              <span className='govuk-caption-m hmrc-caption-m'>
+                {`${placeholderOrHelperText} ${hintValue}`}
+              </span>
+            )}
+          </>
         )}{' '}
       </dd>
     </div>
@@ -35,5 +49,7 @@ export default function ReadOnlyDisplay(props) {
 ReadOnlyDisplay.propTypes = {
   label: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-  name: PropTypes.string
+  name: PropTypes.string,
+  placeholder: PropTypes.string,
+  helperText: PropTypes.string
 };

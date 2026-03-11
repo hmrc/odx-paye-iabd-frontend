@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { withKnobs } from '@storybook/addon-knobs';
 
 import HmrcOdxGdsCheckAnswersPage from './index';
-import { DateInput, Input, FieldValueList, Text } from '@pega/cosmos-react-core';
+import { DateInput, FieldValueList, Text } from '@pega/cosmos-react-core';
 import { PhoneInput as CosmosPhone } from '@pega/cosmos-react-core';
-import { pyReviewRaw, regionChildrenResolved } from './mock';
+import { regionChildrenResolved } from './mock';
 
 export default {
   title: 'HmrcOdxGdsCheckAnswersPage',
@@ -86,10 +86,10 @@ export const BaseHmrcOdxGdsCheckAnswersPage = () => {
 
   window.PCore.getPubSubUtils = () => {
     return {
-      subscribe: (event, callback, context) => {
+      subscribe: callback => {
         callback();
       },
-      unsubscribe: (event, callback, context) => {}
+      unsubscribe: () => {}
     };
   };
 

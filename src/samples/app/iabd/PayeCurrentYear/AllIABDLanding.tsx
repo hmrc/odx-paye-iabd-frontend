@@ -6,21 +6,35 @@ import MainWrapperFull from '../../../../components/BaseComponents/MainWrapper/M
 
 import setPageTitle from '../../../../components/helpers/setPageTitleHelpers';
 import i18next from 'i18next';
-import LoadingSpinner from '../../../../components/helpers/LoadingSpinner/LoadingSpinner';
+import LoadingWrapper from '../../../../components/helpers/LoadingSpinner/LoadingWrapper';
 import ErrorMessage from '../ErrorPage/errorMessage';
 import { AllIABDDetails } from './PayeCurrentYearTypes';
 import BenefitsTable from '../../../../components/AppComponents/AllIABDLandingComponents/BenefitsTable';
 import AllIABDNonBenefitsTable from '../../../../components/AppComponents/AllIABDLandingComponents/AllIABDNonBenefitsTable';
+import ShutteredServiceWrapper from '../../../../components/AppComponents/ShutterService/ShutteredServiceWrapper';
+import useServiceShuttered from '../../../../components/helpers/hooks/useServiceShuttered';
+import { withPageTracking } from 'hmrc-odx-features-and-functions';
+import MissingLinksSection from './missingDetailsLinksSection';
 
 interface AllIABDLandingProps {
-  goBack: () => void;
-
+  redirectCurrentYearPage: () => void;
+  redirectToUnderstandYourTaxPage: () => void;
+  redirectToViewTimelineDetailsPage: () => void;
+  comingFromPage: string;
   handleLinkClick: (d: string) => void;
+  handleMoreInformationClick: (d: string) => void;
 }
 
-const AllIABDLanding = ({ handleLinkClick, goBack }: AllIABDLandingProps) => {
+const AllIABDLanding = ({
+  handleLinkClick,
+  redirectCurrentYearPage,
+  redirectToUnderstandYourTaxPage,
+  redirectToViewTimelineDetailsPage,
+  handleMoreInformationClick,
+  comingFromPage
+}: AllIABDLandingProps) => {
   const { t } = useTranslation();
-
+  const { serviceShuttered, isLoading: isShutterServiceLoading } = useServiceShuttered();
   const [isDetailsAvailable, setIsDetailsAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentBenefitsList, setCurrentBenefitsList] = useState([]);
@@ -82,69 +96,86 @@ const AllIABDLanding = ({ handleLinkClick, goBack }: AllIABDLandingProps) => {
     setPageTitle();
   }, [i18next.language]);
 
-  return isLoading ? (
-    <LoadingSpinner bottomText='Loading' size='30px' />
-  ) : (
-    <>
-      <Button
-        variant='backlink'
-        onClick={e => {
-          e.preventDefault();
-          goBack();
-        }}
-        key='AllIABDPageBacklink'
-        attributes={{ type: 'link' }}
-      />
-      {errorMsgArr?.length > 0 && <ErrorMessage />}
-      {errorMsgArr === undefined && (
-        <MainWrapperFull>
-          <div className='govuk-grid-row'>
-            <div className='govuk-grid-column-full'>
-              <h1 className='govuk-heading-xl'>{t('VIEW_UPDATE_INFORMATION')}</h1>
-              {isDetailsAvailable ? (
-                <div className='govuk-inset-text'>
-                  <p className='govuk-body'>{t('LIST_SHOWS_ALL_PAY_AS_YOU_EARN')}</p>
-                  <p className='govuk-body'>{t('AMOUNT_DO_NOT_ACCOUNT_PERSONAL_RELIEFS')}</p>
+  return (
+    <ShutteredServiceWrapper serviceIsShuttered={serviceShuttered}>
+      <LoadingWrapper
+        pageIsLoading={isLoading || isShutterServiceLoading}
+        spinnerProps={{ bottomText: t('LOADING'), size: '30px', label: t('LOADING') }}
+      >
+        <>
+          <Button
+            variant='backlink'
+            onClick={e => {
+              e.preventDefault();
+              if (comingFromPage === 'UnderstandYourTaxPage') {
+                redirectToUnderstandYourTaxPage();
+              } else if (comingFromPage === 'ViewTimelineDetailsPage') {
+                redirectToViewTimelineDetailsPage();
+              } else {
+                redirectCurrentYearPage();
+              }
+            }}
+            key='AllIABDPageBacklink'
+            attributes={{ type: 'link' }}
+          />
+          {errorMsgArr?.length > 0 && <ErrorMessage />}
+          {errorMsgArr === undefined && (
+            <MainWrapperFull title={t('VIEW_UPDATE_INFORMATION', { lng: 'en' })}>
+              <div className='govuk-grid-row'>
+                <div className='govuk-grid-column-two-thirds'>
+                  <h1 className='govuk-heading-xl'>{t('OTHER_INCOMES_IABD')}</h1>
+                  {isDetailsAvailable ? (
+                    <>
+                     <p className='govuk-body'>{t('LIST_SHOWS_ALL_PAY_AS_YOU_EARN')}</p>
+                    <div className='govuk-inset-text'>
+                      <p className='govuk-body'>{t('AMOUNT_DO_NOT_ACCOUNT_PERSONAL_RELIEFS')}</p>
+                    </div>
+                      </>
+                  ) : (
+                    <p className='govuk-body'>{t('NO_INCOME_OTHER_SOURCE')}</p>
+                  )}
                 </div>
-              ) : (
-                <p className='govuk-body'>{t('NO_INCOME_OTHER_SOURCE')}</p>
-              )}
-            </div>
-          </div>
-
-          {isDetailsAvailable && (
-            <div className='govuk-grid-row'>
-              <div className='govuk-grid-column-full'>
-                {/* Income */}
-                <AllIABDNonBenefitsTable
-                  nonBenefitList={currentIncomeList}
-                  nonBenefitType='incomes'
-                  handleLinkClick={handleLinkClick}
-                />
-                {/* Allowances */}
-                <AllIABDNonBenefitsTable
-                  nonBenefitList={currentAllowanceList}
-                  nonBenefitType='allowances'
-                  handleLinkClick={handleLinkClick}
-                />
-                {/* Benefits */}
-                <BenefitsTable
-                  handleLinkClick={handleLinkClick}
-                  displayList={currentBenefitsList}
-                />
-                {/* Deductions */}
-                <AllIABDNonBenefitsTable
-                  nonBenefitList={currentDeductionsList}
-                  nonBenefitType='deductions'
-                  handleLinkClick={handleLinkClick}
-                />
               </div>
-            </div>
+
+              {isDetailsAvailable && (
+                <div className='govuk-grid-row'>
+                  <div className='govuk-grid-column-full'>
+                    {/* Income */}
+                    <AllIABDNonBenefitsTable
+                      nonBenefitList={currentIncomeList}
+                      nonBenefitType='incomes'
+                      handleLinkClick={handleLinkClick}
+                      handleMoreInformationClick={handleMoreInformationClick}
+                    />
+                    {/* Allowances */}
+                    <AllIABDNonBenefitsTable
+                      nonBenefitList={currentAllowanceList}
+                      nonBenefitType='allowances'
+                      handleLinkClick={handleLinkClick}
+                      handleMoreInformationClick={handleMoreInformationClick}
+                    />
+                    {/* Benefits */}
+                    <BenefitsTable
+                      handleLinkClick={handleLinkClick}
+                      displayList={currentBenefitsList}
+                    />
+                    {/* Deductions */}
+                    <AllIABDNonBenefitsTable
+                      nonBenefitList={currentDeductionsList}
+                      nonBenefitType='deductions'
+                      handleLinkClick={handleLinkClick}
+                      handleMoreInformationClick={handleMoreInformationClick}
+                    />
+                    <MissingLinksSection />
+                  </div>
+                </div>
+              )}
+            </MainWrapperFull>
           )}
-        </MainWrapperFull>
-      )}
-    </>
+        </>
+      </LoadingWrapper>
+    </ShutteredServiceWrapper>
   );
 };
 
-export default AllIABDLanding;
+export default withPageTracking(AllIABDLanding);

@@ -15,10 +15,9 @@ export const enableGATracking = (): void => {
   const loadGTM = (id: string, dataLayerName: string = 'dataLayer'): void => {
     // Check if the GTM script is already loaded in the DOM
     if (!document.querySelector(`script[src*="gtm.js?id=${id}"]`)) {
-
       window.dataLayer.push({
         'gtm.start': new Date().getTime(),
-        event: 'gtm.js',
+        event: 'gtm.js'
       });
 
       const script = document.createElement('script');
@@ -28,7 +27,7 @@ export const enableGATracking = (): void => {
       script.src = `https://www.googletagmanager.com/gtm.js?id=${id}${dataLayerName !== 'dataLayer' ? `&l=${dataLayerName}` : ''}`;
 
       // Insert the script before the first existing script tag
-      firstScript.parentNode?.insertBefore(script, firstScript);
+      firstScript?.parentNode?.insertBefore(script, firstScript);
     }
   };
 

@@ -5,6 +5,7 @@ import { mockGetSdkConfigWithBasepath } from '../../../../../tests/mocks/getSdkC
 import { act } from 'react-dom/test-utils';
 import CurrentTimeLineEvent from './CurrentTimeLineEvent';
 import { formatDate } from '../../../../components/helpers/utils';
+import RenderTimeLineEventHeading from './RenderTimeLineEventHeading';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
@@ -73,7 +74,6 @@ describe('Current time line Event component', () => {
       );
     });
 
-    expect(screen.getByText('Mock english description')).toBeInTheDocument();
     expect(screen.getByText(formatDate('2020-02-02'))).toBeInTheDocument();
   });
 
@@ -90,7 +90,51 @@ describe('Current time line Event component', () => {
       );
     });
 
-    expect(screen.getByText('Mock welsh description')).toBeInTheDocument();
     expect(screen.getByText(formatDate('2020-02-02'))).toBeInTheDocument();
+  });
+});
+
+jest.mock('./RenderTimeLineEventHeading', () => jest.fn(() => <div>Mocked heading Component</div>));
+
+describe('Render heading display component', () => {
+  const details = [
+    {
+      DisplayDate: '2020-02-02',
+      pyNote: 'Mock Py Note',
+      Content: [
+        {
+          pyKeyString: 'mock key',
+          Description: 'Mock english description',
+          Language: 'EN'
+        },
+        {
+          pyKeyString: 'mock key',
+          Description: 'Mock welsh description',
+          Language: 'CY'
+        }
+      ],
+      pyTempDate: '2020-02-02',
+      StringSortingHolder: 'A',
+      issuedtaxCode: 'issued tax code',
+      EmployerName: 'M&S'
+    }
+  ];
+  beforeEach(() => {
+    // Mock the RenderTimeLineEventHeading copmentnt before each test
+    jest.clearAllMocks();
+  });
+
+  test('renders heading display component when current time line event called', async () => {
+    await act(async () => {
+      render(
+        <CurrentTimeLineEvent
+          latestTimeLineEvents={details}
+          eventType='fullEvent'
+          handleViewDetailsClick={handleViewDetailsClick}
+        />
+      );
+    });
+
+    expect(RenderTimeLineEventHeading).toHaveBeenCalled();
   });
 });

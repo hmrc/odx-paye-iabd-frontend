@@ -49,7 +49,7 @@ const renderField = resolvedProps => {
   return <FieldValueList variant={variant} fields={[{ name: label, value: val }]} />;
 };
 
-export const baseHmrcOdxCheckAnswers = () => {
+export const BaseHmrcOdxCheckAnswers = () => {
   const props = {
     NumCols: 1,
     template: 'DefaultForm',

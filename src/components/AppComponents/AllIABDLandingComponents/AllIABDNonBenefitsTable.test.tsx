@@ -14,6 +14,7 @@ jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
 }));
 
 const handleLinkClick = jest.fn();
+const handleMoreInformationClick = jest.fn();
 
 describe('ALL IABD Non Benefits component', () => {
   const mockGetPageDataAsync = jest.fn();
@@ -91,17 +92,19 @@ describe('ALL IABD Non Benefits component', () => {
             nonBenefitList={mockData}
             nonBenefitType='income'
             handleLinkClick={handleLinkClick}
+            handleMoreInformationClick={handleMoreInformationClick}
           />
         </I18nextProvider>
       );
     });
-    const spanElementWel = screen.getByText('mock name Income');
+
+    const spanElementWel = screen.getByText('Income', { selector: 'span', exact: true });
     expect(spanElementWel).toBeInTheDocument();
     expect(spanElementWel).toHaveClass('govuk-visually-hidden');
     expect(screen.getByText('Item')).toBeInTheDocument();
     expect(screen.getByText('Amount')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
-    expect(screen.getByText('Income')).toBeInTheDocument();
+    expect(screen.getByText('Income', { selector: 'th', exact: true })).toBeInTheDocument();
     expect(screen.getByText('mock name')).toBeInTheDocument();
     expect(screen.getByText('£10.56')).toBeInTheDocument();
     const link = screen.getByText('mock name');
@@ -155,17 +158,18 @@ describe('ALL IABD Non Benefits component', () => {
             nonBenefitList={mockData}
             nonBenefitType='allowance'
             handleLinkClick={handleLinkClick}
+            handleMoreInformationClick={handleMoreInformationClick}
           />
         </I18nextProvider>
       );
     });
-    const spanElementWel = screen.getByText('mock name allowance');
+    const spanElementWel = screen.getByText('allowance', { selector: 'span', exact: true });
     expect(spanElementWel).toBeInTheDocument();
     expect(spanElementWel).toHaveClass('govuk-visually-hidden');
     expect(screen.getByText('Item')).toBeInTheDocument();
     expect(screen.getByText('Amount')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
-    expect(screen.getByText('allowance')).toBeInTheDocument();
+    expect(screen.getByText('allowance', { selector: 'th', exact: true })).toBeInTheDocument();
     expect(screen.getByText('mock name')).toBeInTheDocument();
     expect(screen.getByText('£10.56')).toBeInTheDocument();
     const link = screen.getByText('mock name');
@@ -218,17 +222,18 @@ describe('ALL IABD Non Benefits component', () => {
             nonBenefitList={mockData}
             nonBenefitType='deductions'
             handleLinkClick={handleLinkClick}
+            handleMoreInformationClick={handleMoreInformationClick}
           />
         </I18nextProvider>
       );
     });
-    const spanElementWel = screen.getByText('mock name deductions');
+    const spanElementWel = screen.getByText('deductions', { selector: 'span', exact: true });
     expect(spanElementWel).toBeInTheDocument();
     expect(spanElementWel).toHaveClass('govuk-visually-hidden');
     expect(screen.getByText('Item')).toBeInTheDocument();
     expect(screen.getByText('Amount')).toBeInTheDocument();
     expect(screen.getByText('Actions')).toBeInTheDocument();
-    expect(screen.getByText('deductions')).toBeInTheDocument();
+    expect(screen.getByText('deductions', { selector: 'th', exact: true })).toBeInTheDocument();
     expect(screen.getByText('mock name')).toBeInTheDocument();
     expect(screen.getByText('£10.56')).toBeInTheDocument();
     const link = screen.getByText('mock name');
@@ -247,6 +252,7 @@ describe('ALL IABD Non Benefits component', () => {
             nonBenefitList={mockData}
             nonBenefitType='deductions'
             handleLinkClick={handleLinkClick}
+            handleMoreInformationClick={handleMoreInformationClick}
           />
         </I18nextProvider>
       );
@@ -266,6 +272,7 @@ describe('ALL IABD Non Benefits component', () => {
             nonBenefitList={mockData}
             nonBenefitType='incomes'
             handleLinkClick={handleLinkClick}
+            handleMoreInformationClick={handleMoreInformationClick}
           />
         </I18nextProvider>
       );

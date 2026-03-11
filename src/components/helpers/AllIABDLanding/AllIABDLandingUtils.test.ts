@@ -1,4 +1,4 @@
-import { getContentOnLanguageSelection, getEmploymentName, getKey } from './AllIABDLandingUtils';
+import { getContentOnLanguageSelection, getEmploymentName, getEnglishContent, getKey } from './AllIABDLandingUtils';
 import { TESObject } from '../../../samples/app/iabd/PayeCurrentYear/PayeCurrentYearTypes';
 import { t } from 'i18next';
 
@@ -49,5 +49,23 @@ describe('getKey', () => {
     const key2 = getKey(mockData);
 
     expect(key1).not.toBe(key2);
+  });
+});
+
+describe('getEnglishContent', () => {
+  const mockContent: TESObject[] = [
+    { pyKeyString: 'KeyString1', Language: 'EN', Name: 'English Content' },
+    { pyKeyString: 'KeyString2', Language: 'CY', Name: 'Welsh Content' }
+  ];
+
+  test('should return the English content if it exists', () => {
+    const result = getEnglishContent(mockContent);
+    expect(result.pyKeyString).toEqual(mockContent[0].pyKeyString);
+    expect(result.Name).toBe('English Content');
+  });
+
+  test('should return undefined if English content does not exist', () => {
+    const result = getEnglishContent([{ pyKeyString: 'KeyString2', Language: 'CY', Name: 'Welsh Content' }]);
+    expect(result).toBeUndefined();
   });
 });

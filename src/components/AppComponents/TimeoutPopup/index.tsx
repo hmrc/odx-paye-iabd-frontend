@@ -3,6 +3,7 @@ import Modal from '../../BaseComponents/Modal/Modal';
 import Button from '../../BaseComponents/Button/Button';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { triggerLogout } from '../../helpers/utils';
 
 export default function TimeoutPopup(props) {
   const {
@@ -188,7 +189,7 @@ export default function TimeoutPopup(props) {
 
   const signout = e => {
     e.preventDefault();
-    signoutHandler();
+    triggerLogout(false);
   };
 
   if (children) {
@@ -231,8 +232,14 @@ export default function TimeoutPopup(props) {
               {t('STAY_SIGNED_IN')}
             </Button>
 
-            <a id='modal-staysignin-btn' className='govuk-link' href='#' onClick={signout}>
-              {t('SIGN-OUT')}
+            <a
+              id='modal-staysignin-btn'
+              data-tracking-type='Signout'
+              className='govuk-link'
+              href='#'
+              onClick={signout}
+            >
+              {t('SIGN_OUT')}
             </a>
           </div>
         </div>

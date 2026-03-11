@@ -32,10 +32,7 @@ const languageToggle = async (lang: string, i18nRef: i18n, dataBundles: string[]
 // Bundles  for IABD
 const loadBundles = async (lang: string) => {
   if (typeof PCore !== 'undefined') {
-    const { GENERIC_BUNDLE_KEY } = PCore.getLocaleUtils();
-
     const bundles = [
-      GENERIC_BUNDLE_KEY,
       '@BASECLASS!DATAPAGE!D_AAREFERENCEDATALIST',
       '@BASECLASS!DATAPAGE!D_NATIONALITYLIST',
       '@BASECLASS!DATAPAGE!D_COUNTRYLISTSORTEDBYCOUNTRY',

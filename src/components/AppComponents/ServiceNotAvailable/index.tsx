@@ -7,7 +7,7 @@ export default function ServiceNotAvailable(props) {
 
   const { t } = useTranslation();
   return (
-    <MainWrapper>
+    <MainWrapper title={t('SERVICE_NOT_AVAILABLE', { lng: 'en' })}>
       <h1 className='govuk-heading-l'>{t('SERVICE_NOT_AVAILABLE')}</h1>
       <p className='govuk-body'>{t('COME_BACK_LATER')}</p>
       <a href='#' className='govuk-link ' onClick={returnToPortalPage}>

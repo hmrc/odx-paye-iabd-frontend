@@ -14,14 +14,15 @@ import { CurrentListOBJ } from '../../../samples/app/iabd/PayeCurrentYear/PayeCu
 interface AllIABDLandingProps {
   nonBenefitList: CurrentListOBJ[];
   nonBenefitType: string;
-
+  handleMoreInformationClick: (d: string) => void;
   handleLinkClick: (d: string) => void;
 }
 
 const AllIABDNonBenefitsTable = ({
   nonBenefitList,
   nonBenefitType,
-  handleLinkClick
+  handleLinkClick,
+  handleMoreInformationClick
 }: AllIABDLandingProps) => {
   const { t } = useTranslation();
   const [benefitCaption, setBenefitCaption] = useState('');
@@ -29,7 +30,7 @@ const AllIABDNonBenefitsTable = ({
   const getNonBenefitCategory = nonBenefit => {
     switch (nonBenefit) {
       case 'incomes':
-        setBenefitCaption(t('INCOME'));
+        setBenefitCaption(t('OTHER_INCOME'));
         setNoBenefitInfo(t('NO_INCOME_FROM_OTHER'));
         break;
 
@@ -53,19 +54,27 @@ const AllIABDNonBenefitsTable = ({
   const renderLinks = linkObj => {
     const TesLinkContent = getContentOnLanguageSelection(linkObj?.TESLinks?.[0]?.Content);
     return linkObj?.TESLinks ? (
-      <a
+     <a
         className='govuk-link'
         href='#'
-        onClick={e => {
-          e.preventDefault();
-          handleLinkClick(TesLinkContent?.pyURLContent);
-        }}
-      >
-        {TesLinkContent?.Name}
+        data-tracking-type='Outbound'
+  data-tracking-target={`${TesLinkContent?.Name} ${getContentOnLanguageSelection(linkObj?.Content)?.Name} ${TesLinkContent?.pyURLContent}`}
+  onClick={e => {
+    e.preventDefault();
+    const url = TesLinkContent?.pyURLContent;
+
+    if (url && url !== 'NA') {
+      handleLinkClick(url);
+    } else {
+      handleMoreInformationClick('winterFuelPaymentIABDPage');
+    }
+  }}
+>
+  {TesLinkContent?.Name}
         <span className='govuk-visually-hidden'>
-          {`${TesLinkContent?.Name} ${getContentOnLanguageSelection(linkObj?.Content)?.Name}`}
-        </span>
-      </a>
+    {getContentOnLanguageSelection(linkObj?.Content)?.Name}
+  </span>
+</a>
     ) : (
       t('NO_ACTIONS')
     );

@@ -1,0 +1,7 @@
+const REFERENCE_TO_TEMPLATE_NAME: Record<string, string> = {
+  PAYMENTSTOWARDSARETIREMENTANNUITY004_ADDED: 'PaymentsTowardsARetirementAnnuity004Added',
+  MARRIEDCOUPLESALLOWANCE016_ADDED: 'MarriedCouplesAllowance016Added',
+  OTHEREARNINGSORPENSION029_INCREASED: 'OtherEarningsOrPension029Increased'
+};
+
+export default REFERENCE_TO_TEMPLATE_NAME;

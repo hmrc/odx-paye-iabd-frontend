@@ -3,10 +3,13 @@ import {
   formatDate,
   generateKey,
   formatCurrency,
-  getTaxCode,
+  formatTaxCode,
   getTesLinks,
   getTESLinksOnLang
 } from '../../../../components/helpers/utils';
+import { callClientActionDataPage } from '../eventTrackingConfig';
+
+import { EventType, InteractionTracker } from 'hmrc-odx-features-and-functions';
 import { useTranslation } from 'react-i18next';
 
 const SummaryCard = ({
@@ -14,7 +17,8 @@ const SummaryCard = ({
   type,
   handleNavClick,
   handleViewAllDetailsClick,
-  beginIntrruptionPage
+  beginIntrruptionPage,
+  handleUnderstandYourTaxCodeClick
 }) => {
   const { t } = useTranslation();
   const isCurrentEmployment = type === 'currentEmp';
@@ -27,6 +31,8 @@ const SummaryCard = ({
   const viewAllDetailsArr = getTesLinks('ALLDETAIL', tesLinkArrLang);
   const updateTaxibleIncomeArr = getTesLinks('ESTPAY', tesLinkArrLang);
   const understandTaxCodeArr = getTesLinks('TAXCODE', tesLinkArrLang);
+  const noActionClassName =
+    updateTaxibleIncomeArr?.length > 0 ? ' govuk-summary-list__row--no-actions' : '';
 
   return (
     <div
@@ -35,54 +41,54 @@ const SummaryCard = ({
     >
       <div className='govuk-summary-card__title-wrapper center-align'>
         <h4 className='govuk-summary-card__title'>{details.EmployerName}</h4>
-
-        <ul className='govuk-summary-card__actions'>
-          {(viewPaymentsArr?.length > 0 || viewAllDetailsArr?.length > 0) && (
-            <ul className='govuk-summary-card__actions'>
-              {viewPaymentsArr?.length > 0 && (
-                <li className='govuk-summary-card__action'>
-                  <a
-                    className='govuk-link'
-                    href='#'
-                    onClick={e => {
-                      handleNavClick(e, viewPaymentsArr[0].pyURLContent);
-                    }}
-                  >
-                    {viewPaymentsArr[0].Name}
-                    <span className='govuk-visually-hidden'>
-                      {t('FOR')}
-                      {details.EmployerName}
-                    </span>
-                  </a>
-                </li>
-              )}
-              {viewAllDetailsArr?.length > 0 && (
-                <li className='govuk-summary-card__action'>
-                  <a
-                    className='govuk-link'
-                    href='#'
-                    onClick={() => {
-                      handleViewAllDetailsClick(details);
-                    }}
-                  >
-                    {t('VIEW_ALL_DETAILS')}
-                    <span className='govuk-visually-hidden'>
-                      {t('FOR')}
-                      {details.EmployerName}
-                    </span>
-                  </a>
-                </li>
-              )}
-            </ul>
-          )}
-        </ul>
+        {(viewPaymentsArr?.length > 0 || viewAllDetailsArr?.length > 0) && (
+          <ul className='govuk-summary-card__actions'>
+            {viewPaymentsArr?.length > 0 && (
+              <li className='govuk-summary-card__action'>
+                <a
+                  href='#'
+                  className='govuk-link'
+                  data-tracking-type='Outbound'
+                  data-tracking-target={`View Payments for ${details.EmployerName} ${viewPaymentsArr[0].pyURLContent}`}
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    handleNavClick(e, viewPaymentsArr[0].pyURLContent);
+                  }}
+                >
+                  {viewPaymentsArr[0].Name}
+                  <span className='govuk-visually-hidden'>
+                    {t('FOR')}
+                    {details.EmployerName}
+                  </span>
+                </a>
+              </li>
+            )}
+            {viewAllDetailsArr?.length > 0 && (
+              <li className='govuk-summary-card__action'>
+                <a
+                  className='govuk-link'
+                  href='#'
+                  onClick={() => {
+                    handleViewAllDetailsClick(details);
+                  }}
+                >
+                  {t('VIEW_ALL_DETAILS')}
+                  <span className='govuk-visually-hidden'>
+                    {t('FOR')}
+                    {details.EmployerName}
+                  </span>
+                </a>
+              </li>
+            )}
+          </ul>
+        )}
       </div>
 
       <div className='govuk-summary-card__content'>
         <dl className='govuk-summary-list'>
           {(isCurrentEmployment || isCurrentPension) && (
             <>
-              <div className='govuk-summary-list__row'>
+              <div className={`govuk-summary-list__row ${noActionClassName}`}>
                 <dt className='govuk-summary-list__key'>{t('START_DATE')}</dt>
                 <dd className='govuk-summary-list__value'>{formatDate(details.StartDate)}</dd>
               </div>
@@ -95,6 +101,10 @@ const SummaryCard = ({
                   <dd className='govuk-summary-list__actions'>
                     <a
                       href='#'
+                      data-tracking-type={
+                        details.EstimatedPayInterruptionFlag !== true ? 'Outbound' : undefined
+                      }
+                      data-tracking-target={`${updateTaxibleIncomeArr[0].Name} ${t('ESTIMATED_TAXABLE_INCOME_FOR')}${details.EmployerName} ${updateTaxibleIncomeArr[0].pyURLContent}`}
                       onClick={e => {
                         e.preventDefault();
                         if (details.EstimatedPayInterruptionFlag === true) {
@@ -149,7 +159,9 @@ const SummaryCard = ({
                   </div>
                   <div className='govuk-summary-list__row'>
                     <dt className='govuk-summary-list__key'>{t('EMPLOYER_PAYE_REFRENCE')}</dt>
-                    <dd className='govuk-summary-list__value'>{details.PAYENumber}</dd>
+                    <dd className='govuk-summary-list__value'>
+                      {details?.PAYENumber || t('NO_INFORMATION')}
+                    </dd>
                   </div>
                 </>
               )}
@@ -158,12 +170,28 @@ const SummaryCard = ({
 
           <div className='govuk-summary-list__row'>
             <dt className='govuk-summary-list__key'>{t('TAX_CODE')}</dt>
-            <dd className='govuk-summary-list__value'>{getTaxCode(details.AssignedTaxCode)}</dd>
+            <dd className='govuk-summary-list__value'>{formatTaxCode(details.AssignedTaxCode)}</dd>
             {understandTaxCodeArr?.length > 0 && (
               <dd className='govuk-summary-list__actions'>
                 <a
                   href='#'
-                  onClick={e => handleNavClick(e, understandTaxCodeArr[0].pyURLContent)}
+                  onClick={e => {
+                    const taxCode = understandTaxCodeArr[0]?.pyURLContent?.toLowerCase();
+                    if (taxCode === 'defaulttaxcode' || taxCode === 'specialtaxcode') {
+                      handleUnderstandYourTaxCodeClick(details, taxCode, 'PayeCurrentYearPage');
+                    } else {
+                      const interactionTracker = new InteractionTracker({
+                        url: null,
+                        apiCallback: callClientActionDataPage
+                      });
+                      interactionTracker.logEvent(
+                        EventType.Outbound,
+                        `${understandTaxCodeArr[0].Name} ${t('FOR')} ${details.EmployerName} ${`${understandTaxCodeArr[0]?.pyURLContent}`}`,
+                        {}
+                      );
+                      handleNavClick(e, understandTaxCodeArr[0]?.pyURLContent);
+                    }
+                  }}
                   className='govuk-link'
                 >
                   {understandTaxCodeArr[0].Name}
@@ -185,8 +213,10 @@ const SummaryCard = ({
                     <dd className='govuk-summary-list__value'>{details.PayRollID}</dd>
                   </div>
                   <div className='govuk-summary-list__row'>
-                    <dt className='govuk-summary-list__key'>{t('PENSION_PAYE_REFRENCE')}</dt>
-                    <dd className='govuk-summary-list__value'>{details.PAYENumber}</dd>
+                    <dt className='govuk-summary-list__key'>{t('EMPLOYER_PAYE_REFRENCE')}</dt>
+                    <dd className='govuk-summary-list__value'>
+                      {details?.PAYENumber || t('NO_INFORMATION')}
+                    </dd>
                   </div>
                 </>
               )}

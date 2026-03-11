@@ -54,12 +54,18 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
   // const actions = pConn.getActionsApi();
   const containerItemID = pConn.getContextName();
 
-  function navigateToStep(event, stepId) {
+  async function navigateToStep(event: MouseEvent, stepId: string) {
     event.preventDefault();
-    const initialValue = '';
-    const isImplicit = false;
-    getPConnect().setValue('.NextStep', stepId, initialValue, isImplicit);
-    getPConnect().getActionsApi().finishAssignment(containerItemID);
+    const customEventExecuted = await new Promise(resolve => {
+      PCore.getPubSubUtils().publish('CUSTOM_EVENT_CYA_CHANGE_INITIATED', { resolve });
+    });
+
+    if (!customEventExecuted) {
+      const initialValue = '';
+      const isImplicit = false;
+      getPConnect().setValue('.NextStep', stepId, initialValue, isImplicit);
+      getPConnect().getActionsApi().finishAssignment(containerItemID);
+    }
   }
 
   function updateHTML(htmlContent) {

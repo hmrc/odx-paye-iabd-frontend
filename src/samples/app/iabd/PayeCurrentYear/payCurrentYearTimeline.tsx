@@ -6,18 +6,10 @@ import { TimeLineEvent, TimeLineEvents } from '../../../../reuseables/Types/Time
 interface CurrentYearTimeLineProps {
   latestTimeLineEvents: TimeLineEvents;
   redirecLatestEventPage: any;
-
-  redirectToAllIABDLandingPage: (s: string) => void;
-
   handleViewDetailsClick: (d: TimeLineEvent, s: string) => void;
 }
 const CurrentYearTimeLine = (props: CurrentYearTimeLineProps) => {
-  const {
-    latestTimeLineEvents,
-    redirecLatestEventPage,
-    redirectToAllIABDLandingPage,
-    handleViewDetailsClick
-  } = props;
+  const { latestTimeLineEvents, redirecLatestEventPage, handleViewDetailsClick } = props;
   const { t } = useTranslation();
 
   return (
@@ -35,37 +27,26 @@ const CurrentYearTimeLine = (props: CurrentYearTimeLineProps) => {
                 />
               )) ?? <p>{t('NO_ACTIVITY_YET')}</p>}
             </ol>
-            <p className='govuk-body'>
-              <a
-                className='govuk-link'
-                href=''
-                onClick={e => {
-                  e.preventDefault();
-                  redirecLatestEventPage('PayeCurrentYearPage');
-                }}
-              >
-                {t('VIEW_ALL_ACTIVITY')}
-              </a>
-            </p>
+            {latestTimeLineEvents?.length > 3 && (
+              <p className='govuk-body'>
+                <a
+                  className='govuk-link'
+                  href=''
+                  onClick={e => {
+                    e.preventDefault();
+                    redirecLatestEventPage('PayeCurrentYearPage');
+                  }}
+                >
+                  {t('VIEW_ALL_ACTIVITY')}
+                </a>
+              </p>
+            )}
           </>
         ) : (
           <p className='govuk-!-margin-top-1 govuk-!-margin-bottom-1 govuk-hint'>
             {t('NO_ACTIVITY_YET')}
           </p>
         )}
-        <h2 className='govuk-heading-l'>{t('INFORMATION_HMRC_ABOUT_YOU')}</h2>
-        <div className='govuk-inset-text'>
-          <a
-            className='govuk-link'
-            href=''
-            onClick={e => {
-              e.preventDefault();
-              redirectToAllIABDLandingPage('PayeCurrentYearPage');
-            }}
-          >
-            {t('VIEW_UPDATE_INFORMATION')}
-          </a>
-        </div>
       </div>
     </div>
   );

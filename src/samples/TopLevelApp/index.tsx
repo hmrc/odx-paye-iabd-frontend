@@ -3,13 +3,16 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
 import AppSelector from '../AppSelector';
-import { getCookie } from '../../components/helpers/cookie';
-import { enableGATracking, pushGAConsent } from '../../components/helpers/analyticsTracking';
+import useEventTracking from '../app/iabd/eventTrackingConfig';
+// import { getCookie } from '../../components/helpers/cookie';
+// import { enableGATracking, pushGAConsent } from '../../components/helpers/analyticsTracking';
 
 const TopLevelApp = () => {
   const [basepath, setBasepath] = useState('');
 
-  const checkUserConsent = () => {
+  useEventTracking();
+
+  /* const checkUserConsent = () => {
     try {
       const trackingConsent = getCookie('userConsent');
 
@@ -31,7 +34,7 @@ const TopLevelApp = () => {
     if (event.key === 'userConsentGA') {
       checkUserConsent(); // Re-run the consent check when the consent changes in other tabs
     }
-  };
+  }; */
 
   useEffect(() => {
     getSdkConfig()
@@ -45,7 +48,7 @@ const TopLevelApp = () => {
       });
 
     // Check user consent on initial load
-    checkUserConsent();
+    /*   checkUserConsent();
 
     // Add the storage event listener
     window.addEventListener('storage', storageEventListener);
@@ -53,7 +56,7 @@ const TopLevelApp = () => {
     // Clean up listener on component unmount
     return () => {
       window.removeEventListener('storage', storageEventListener);
-    };
+    }; */
   }, []);
 
   return (

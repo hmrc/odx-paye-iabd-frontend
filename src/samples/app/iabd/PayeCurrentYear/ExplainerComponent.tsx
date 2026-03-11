@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatCurrency, getTaxCode } from '../../../../components/helpers/utils';
+import { formatCurrency, formatTaxCode } from '../../../../components/helpers/utils';
 
 interface ExplainerComponentProps {
   code: string;
@@ -8,7 +8,11 @@ interface ExplainerComponentProps {
   isActivePension: boolean;
 }
 
-const ExplainerComponent = ({ code, netCodedAllowance, isActivePension }: ExplainerComponentProps) => {
+const ExplainerComponent = ({
+  code,
+  netCodedAllowance,
+  isActivePension
+}: ExplainerComponentProps) => {
   const { t } = useTranslation();
 
   const getExplainerText = (taxCode: string): string => {
@@ -43,7 +47,7 @@ const ExplainerComponent = ({ code, netCodedAllowance, isActivePension }: Explai
 
   return (
     <>
-      <span className='govuk-body govuk-!-font-weight-bold'>{getTaxCode(code)}</span>
+      <span className='govuk-body govuk-!-font-weight-bold'>{formatTaxCode(code)}</span>
       <p className='govuk-body'>{getExplainerText(code)}</p>
     </>
   );

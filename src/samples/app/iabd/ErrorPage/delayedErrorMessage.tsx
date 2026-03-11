@@ -27,7 +27,7 @@ const DelayedErrorMessage = ({ showInstantly, accessGroupMsg }: DelayedErrorMess
     return (
       <>
         {showErrorMessage && (
-          <MainWrapper>
+          <MainWrapper title={t('SORRY_THE_SERVICE_IS_UNAVAILABLE', { lng: 'en' })}>
             <h1 className='govuk-heading-l'>{t('SORRY_THE_SERVICE_IS_UNAVAILABLE')}</h1>
             <p className='govuk-body govuk-!-font-weight-regular'>
               {t('SHUTTER_USE_SERVICE_LATER_MESSAGE')}

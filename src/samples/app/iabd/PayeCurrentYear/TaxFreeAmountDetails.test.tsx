@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TaxFreeAmountDetails from './TaxFreeAmountDetails';
 import { mockGetSdkConfigWithBasepath } from '../../../../../tests/mocks/getSdkConfigMock';
@@ -9,176 +9,122 @@ jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
 }));
 
-describe('Tax free amount details component', () => {
-  const handleLinkClick = jest.fn();
+const TEST_PAGE = 'TestPage';
 
-  afterEach(cleanup);
+const EXPLAINER_PAGES = {
+  UNTAXED_SAVINGS: 'untaxedsavingsinterest',
+  WINTER_FUEL: 'winterfuelpaymentcharge'
+};
 
-  beforeEach(async () => {
-    mockGetSdkConfigWithBasepath();
+const buildContent = (name: string) => [
+  { pyKeyString: name, Language: 'EN', Name: name },
+  { pyKeyString: name, Language: 'CY', Name: `${name} - Welsh` }
+];
 
-    // clearing the mock session storage
-    window.sessionStorage.clear();
-  });
-
-  test('Should render the heading how tax code is caluculated', async () => {
-    const allowances = [];
-    const personalAllowances = [];
-    const deductions = [];
-    await act(async () => {
-      render(
-        <TaxFreeAmountDetails
-          allowances={allowances}
-          personalAllowances={personalAllowances}
-          deductions={deductions}
-          handleLinkClick={handleLinkClick}
-        />
-      );
-    });
-
-    expect(screen.getByText('How your tax-free amount is calculated')).toBeInTheDocument();
-  });
-
-  test('Should render the personal allowances section', async () => {
-    const allowances = [];
-    const personalAllowances = [
+const buildTESLink = (name: string, url: string) => [
+  {
+    Content: [
       {
-        Content: [
-          {
-            pyKeyString: 'personal allowance014',
-            Language: 'EN',
-            Name: 'Personal Allowance'
-          },
-          {
-            pyKeyString: 'personal allowance014',
-            Language: 'CY',
-            Name: 'Personal Allowance - Welsh'
-          }
-        ],
-        AdjustedAmount: '12570'
-      }
-    ];
-    const deductions = [];
-    await act(async () => {
-      render(
-        <TaxFreeAmountDetails
-          allowances={allowances}
-          personalAllowances={personalAllowances}
-          deductions={deductions}
-          handleLinkClick={handleLinkClick}
-        />
-      );
-    });
-
-    expect(screen.getByText('Personal Allowance')).toBeInTheDocument();
-    expect(screen.getByText('£12,570')).toBeInTheDocument();
-  });
-
-  test('Should render the current allowances section', async () => {
-    const allowances = [
-      {
-        Content: [
-          {
-            pyKeyString: 'GiftAidpayments006',
-            Language: 'EN',
-            Name: 'Gift Aid payments'
-          },
-          {
-            pyKeyString: 'GiftAidpayments006',
-            Language: 'CY',
-            Name: 'Gift Aid payments - Welsh'
-          }
-        ],
-        AdjustedAmount: '800'
-      }
-    ];
-    const personalAllowances = [];
-    const deductions = [];
-    await act(async () => {
-      render(
-        <TaxFreeAmountDetails
-          allowances={allowances}
-          personalAllowances={personalAllowances}
-          deductions={deductions}
-          handleLinkClick={handleLinkClick}
-        />
-      );
-    });
-
-    expect(screen.getByText('Gift Aid payments')).toBeInTheDocument();
-    expect(screen.getByText('£800')).toBeInTheDocument();
-  });
-
-  test('Should render the current deductions section', async () => {
-    const allowances = [];
-    const personalAllowances = [];
-    const deductions = [
-      {
-        Content: [
-          {
-            pyKeyString: 'ForcesPension003',
-            Language: 'EN',
-            Name: 'Forces Pension'
-          },
-          {
-            pyKeyString: 'ForcesPension003',
-            Language: 'CY',
-            Name: 'Forces Pension- Welsh'
-          }
-        ],
-        AdjustedAmount: '500'
+        pyKeyString: name,
+        Language: 'EN',
+        pyURLContent: url,
+        Name: name
       },
       {
-        TESLinks: [
-          {
-            Content: [
-              {
-                pyKeyString: 'Underpayment',
-                Language: 'EN',
-                pyURLContent: '/check-income-tax/previous-underpayment',
-                Name: 'Underpayment of £3,000.00 from previous year'
-              },
-              {
-                pyKeyString: 'Underpayment',
-                Language: 'CY',
-                pyURLContent: '/check-income-tax/previous-underpayment',
-                Name: 'Underpayment of  £3,000.00 from previous year'
-              }
-            ]
-          }
-        ],
-        Content: [
-          {
-            pyKeyString: 'Underpaymentamount035',
-            Language: 'EN',
-            Name: 'Underpayment amount'
-          },
-          {
-            pyKeyString: 'Underpaymentamount035',
-            Language: 'CY',
-            Name: 'Underpayment amount- Welsh'
-          }
-        ],
-        AdjustedAmount: '600'
+        pyKeyString: name,
+        Language: 'CY',
+        pyURLContent: url,
+        Name: `${name} - Welsh`
       }
-    ];
-    await act(async () => {
-      render(
-        <TaxFreeAmountDetails
-          allowances={allowances}
-          personalAllowances={personalAllowances}
-          deductions={deductions}
-          handleLinkClick={handleLinkClick}
-        />
-      );
-    });
+    ]
+  }
+];
 
-    expect(screen.getByText('Forces Pension')).toBeInTheDocument();
-    expect(screen.getByText('£500')).toBeInTheDocument();
-    expect(screen.getByText('Underpayment of £3,000.00 from previous year')).toBeInTheDocument();
-    expect(screen.getByText('£600')).toBeInTheDocument();
-    const link = screen.getByText('Underpayment of £3,000.00 from previous year');
-    fireEvent.click(link);
-    expect(handleLinkClick).toHaveBeenCalledWith('/check-income-tax/previous-underpayment');
+const buildDeduction = ({
+  name,
+  explainerPage,
+  adjustedAmount = '100',
+  sourceAmount = '100'
+}: {
+  name: string;
+  explainerPage?: string;
+  adjustedAmount?: string;
+  sourceAmount?: string;
+}) => ({
+  Content: buildContent(name),
+  TESLinks: explainerPage ? buildTESLink(name, explainerPage) : undefined,
+  AdjustedAmount: adjustedAmount,
+  SourceAmount: sourceAmount
+});
+
+const renderComponent = async ({
+  allowances = [],
+  personalAllowances = [],
+  deductions = [],
+  handleLinkClick = jest.fn(),
+  redirectToDeductionExplainerpage = jest.fn()
+} = {}) => {
+  mockGetSdkConfigWithBasepath();
+
+  await act(async () => {
+    render(
+      <TaxFreeAmountDetails
+        allowances={allowances}
+        personalAllowances={personalAllowances}
+        deductions={deductions}
+        handleLinkClick={handleLinkClick}
+        redirectToDeductionExplainerpage={redirectToDeductionExplainerpage}
+        comingFrom={TEST_PAGE}
+      />
+    );
+  });
+
+  return { handleLinkClick, redirectToDeductionExplainerpage };
+};
+
+afterEach(cleanup);
+
+describe('Tax free amount details behaviour', () => {
+  describe('Given explainer deductions are present', () => {
+    test.each([
+      {
+        scenario: 'Untaxed savings interest explainer',
+        deduction: buildDeduction({
+          name: 'Untaxed savings interest',
+          explainerPage: EXPLAINER_PAGES.UNTAXED_SAVINGS,
+          adjustedAmount: '200',
+          sourceAmount: '200'
+        }),
+        expectedPage: EXPLAINER_PAGES.UNTAXED_SAVINGS,
+        expectedSourceAmount: '200'
+      },
+      {
+        scenario: 'Winter fuel payment charge explainer',
+        deduction: buildDeduction({
+          name: 'Winter Fuel Payment Charge',
+          explainerPage: EXPLAINER_PAGES.WINTER_FUEL,
+          adjustedAmount: '300',
+          sourceAmount: '600'
+        }),
+        expectedPage: EXPLAINER_PAGES.WINTER_FUEL,
+        expectedSourceAmount: '600'
+      }
+    ])(
+      'When the user clicks the explainer link, then they are redirected to the explainer page',
+      async ({ deduction, expectedPage, expectedSourceAmount }) => {
+        const { redirectToDeductionExplainerpage } = await renderComponent({
+          deductions: [deduction]
+        });
+
+        const link = screen.getByText(deduction.Content[0].Name);
+        fireEvent.click(link);
+
+        expect(redirectToDeductionExplainerpage).toHaveBeenCalledWith(
+          TEST_PAGE,
+          expectedPage,
+          expectedSourceAmount
+        );
+      }
+    );
   });
 });

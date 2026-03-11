@@ -86,7 +86,15 @@ export default function TextInput(props) {
   }
 
   if (readOnly) {
-    return <ReadOnlyDisplay label={label} value={value} name={name} />;
+    return (
+      <ReadOnlyDisplay
+        label={label}
+        value={value}
+        name={name}
+        placeholder={placeholder}
+        helperText={helperText}
+      />
+    );
   }
 
   const extraProps = {

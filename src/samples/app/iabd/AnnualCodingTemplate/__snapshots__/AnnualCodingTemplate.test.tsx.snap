@@ -1,0 +1,265 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AnnualCodingTemplate component When current language is set as English Then render AnnualCodingTemplate content in English. 1`] = `
+<DocumentFragment>
+  <a
+    class="govuk-back-link"
+    href="#"
+    type="link"
+  >
+    Back
+  </a>
+  <main
+    class="govuk-main-wrapper"
+    id="main-content"
+    role="main"
+  >
+    <div
+      class="govuk-grid-row"
+    >
+      <div
+        class="govuk-grid-column-two-thirds"
+      >
+        <h1
+          class="govuk-heading-xl"
+        >
+          Check your tax code
+        </h1>
+        <p
+          class="govuk-body"
+        >
+          You can now see how much tax you will pay from 11 June 2025 and compare it with what you pay this year.
+        </p>
+        <p
+          class="govuk-body"
+        >
+          Keeping your pay and pension details up to date helps make sure your tax is right for the new tax year.
+        </p>
+        <h2
+          class="govuk-heading-m govuk-!-padding-top-2"
+        >
+          Check the figures we hold for you
+        </h2>
+        <p
+          class="govuk-body"
+        >
+          You should:
+        </p>
+        <ul
+          class="govuk-list govuk-list--bullet"
+        >
+          <li>
+            check the figures look right – if they do, you do not need to do anything
+          </li>
+          <li>
+            update your estimated income if it has changed
+          </li>
+          <li>
+            tell us about changes to company benefits, allowances or tax reliefs, or income from other sources
+          </li>
+        </ul>
+        <p
+          class="govuk-body"
+        >
+          <a
+            class="govuk-link"
+            data-module="govuk-button"
+            data-tracking-target="Check your details </check-income-tax/income-tax-comparison>"
+            data-tracking-type="Outbound"
+            href="#"
+          >
+            Check your details
+          </a>
+        </p>
+      </div>
+    </div>
+    <hr
+      aria-hidden="true"
+      class="govuk-section-break govuk-section-break--m govuk-section-break--invisible"
+    />
+    <p
+      class="govuk-body"
+    >
+      <a
+        class="govuk-link hmrc-report-technical-issue"
+        data-tracking-target="Page not working properly <Tell us about a missing employment> </contact/report-technical-problem?newTab=true&service=IABD&referrerUrl=https://localhost:3502/>"
+        data-tracking-type="Outbound"
+        href="https://www.staging.tax.service.gov.uk/contact/report-technical-problem?newTab=true&service=IABD&referrerUrl=https://localhost:3502/"
+        lang="en"
+        rel="noreferrer noopener"
+        target="_blank"
+      >
+        Is this page not working properly? (opens in new tab)
+      </a>
+    </p>
+    <hr
+      aria-hidden="true"
+      class="govuk-section-break govuk-section-break--m govuk-section-break--invisible"
+    />
+  </main>
+  <div
+    class="govuk-phase-banner"
+  >
+    <p
+      class="govuk-phase-banner__content"
+    >
+      <strong
+        class="govuk-tag govuk-phase-banner__content__tag"
+      >
+        Beta
+      </strong>
+      <span
+        class="govuk-phase-banner__text"
+      >
+        This is a new service. Help us improve it and 
+        <a
+          class="govuk-link"
+          data-tracking-target="Feedback <Tell us about a missing employment> </contact/beta-feedback?service=IABD&referrerUrl=https://localhost:3502/>"
+          data-tracking-type="Outbound"
+          href="https://www.staging.tax.service.gov.uk/contact/beta-feedback?service=IABD&referrerUrl=https://localhost:3502/"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          give your feedback (opens in new tab)
+        </a>
+        .
+      </span>
+    </p>
+  </div>
+  <div
+    class="govuk-!-padding-bottom-6"
+  />
+</DocumentFragment>
+`;
+
+exports[`AnnualCodingTemplate component When current language is set as Welsh Then render AnnualCodingTemplate content in Welsh. 1`] = `
+<DocumentFragment>
+  <a
+    class="govuk-back-link"
+    href="#"
+    type="link"
+  >
+    Yn ôl
+  </a>
+  <main
+    class="govuk-main-wrapper"
+    id="main-content"
+    role="main"
+  >
+    <div
+      class="govuk-grid-row"
+    >
+      <div
+        class="govuk-grid-column-two-thirds"
+      >
+        <h1
+          class="govuk-heading-xl"
+        >
+          Gwirio’ch cod treth
+        </h1>
+        <p
+          class="govuk-body"
+        >
+          Gallwch nawr weld faint o dreth y byddwch chi’n ei thalu o 11 June 2025 a’i gymharu â’r hyn rydych yn ei dalu eleni.
+        </p>
+        <p
+          class="govuk-body"
+        >
+          Mae cadw manylion ynghylch eich cyflog a’ch pensiwn yn gyfredol yn helpu i sicrhau bod eich manylion treth yn gywir ar gyfer y flwyddyn dreth newydd.
+        </p>
+        <h2
+          class="govuk-heading-m govuk-!-padding-top-2"
+        >
+          Gwirio’r ffigurau sydd gennym ar eich cyfer
+        </h2>
+        <p
+          class="govuk-body"
+        >
+          Dylech wneud y canlynol:
+        </p>
+        <ul
+          class="govuk-list govuk-list--bullet"
+        >
+          <li>
+            gwirio bod y ffigyrau’n ymddangos yn gywir – os ydyn nhw, does dim angen i chi wneud dim byd
+          </li>
+          <li>
+            diweddaru eich incwm amcangyfrifedig os yw hwn wedi newid
+          </li>
+          <li>
+            rhowch wybod i ni am newidiadau i fuddiannau cwmni, lwfansau neu ryddhad treth, neu incwm o ffynonellau eraill
+          </li>
+        </ul>
+        <p
+          class="govuk-body"
+        >
+          <a
+            class="govuk-link"
+            data-module="govuk-button"
+            data-tracking-target="Check your details </check-income-tax/income-tax-comparison>"
+            data-tracking-type="Outbound"
+            href="#"
+          >
+            Gwiriwch eich manylion
+          </a>
+        </p>
+      </div>
+    </div>
+    <hr
+      aria-hidden="true"
+      class="govuk-section-break govuk-section-break--m govuk-section-break--invisible"
+    />
+    <p
+      class="govuk-body"
+    >
+      <a
+        class="govuk-link hmrc-report-technical-issue"
+        data-tracking-target="Page not working properly <Tell us about a missing employment> </contact/report-technical-problem?newTab=true&service=IABD&referrerUrl=https://localhost:3502/>"
+        data-tracking-type="Outbound"
+        href="https://www.staging.tax.service.gov.uk/contact/report-technical-problem?newTab=true&service=IABD&referrerUrl=https://localhost:3502/"
+        lang="en"
+        rel="noreferrer noopener"
+        target="_blank"
+      >
+        A yw’r dudalen hon yn gweithio’n iawn? (yn agor tab newydd)
+      </a>
+    </p>
+    <hr
+      aria-hidden="true"
+      class="govuk-section-break govuk-section-break--m govuk-section-break--invisible"
+    />
+  </main>
+  <div
+    class="govuk-phase-banner"
+  >
+    <p
+      class="govuk-phase-banner__content"
+    >
+      <strong
+        class="govuk-tag govuk-phase-banner__content__tag"
+      >
+        Y Cyfnod Beta
+      </strong>
+      <span
+        class="govuk-phase-banner__text"
+      >
+        Gwasanaeth newydd yw hwn. Helpwch ni i’w wella a 
+        <a
+          class="govuk-link"
+          data-tracking-target="Feedback <Tell us about a missing employment> </contact/beta-feedback?service=IABD&referrerUrl=https://localhost:3502/>"
+          data-tracking-type="Outbound"
+          href="https://www.staging.tax.service.gov.uk/contact/beta-feedback?service=IABD&referrerUrl=https://localhost:3502/"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          rhoi eich adborth (yn agor tab newydd)
+        </a>
+        .
+      </span>
+    </p>
+  </div>
+  <div
+    class="govuk-!-padding-bottom-6"
+  />
+</DocumentFragment>
+`;

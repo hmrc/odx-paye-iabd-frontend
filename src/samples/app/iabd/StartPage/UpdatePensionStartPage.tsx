@@ -1,25 +1,31 @@
 import React, { useEffect } from 'react';
 import Button from '../../../../components/BaseComponents/Button/Button';
+import { StartButton as GDSStartButton } from 'hmrc-gds-react-components';
 import { useTranslation } from 'react-i18next';
 import setPageTitle from '../../../../components/helpers/setPageTitleHelpers';
 import useServiceShuttered from '../../../../components/helpers/hooks/useServiceShuttered';
-import ShutterServicePage from '../../../../components/AppComponents/ShutterServicePage';
+import LoadingWrapper from '../../../../components/helpers/LoadingSpinner/LoadingWrapper';
 import MainWrapperFull from '../../../../components/BaseComponents/MainWrapper/MainWrapperFull';
+import ShutteredServiceWrapper from '../../../../components/AppComponents/ShutterService/ShutteredServiceWrapper';
 
 const UpdatePensionStartPage: React.FC<{
   onStart: () => void;
   onBack?: any;
-}> = ({ onStart, onBack }) => {
+  pensionPeriod?: number;
+}> = ({ onStart, onBack, pensionPeriod }) => {
   const { t } = useTranslation();
-  const serviceShuttered = useServiceShuttered();
+  const { serviceShuttered, isLoading } = useServiceShuttered();
 
   useEffect(() => {
     setPageTitle();
   }, []);
 
   return (
-    <>
-      {!serviceShuttered && (
+    <ShutteredServiceWrapper serviceIsShuttered={serviceShuttered}>
+      <LoadingWrapper
+        pageIsLoading={isLoading}
+        spinnerProps={{ bottomText: t('LOADING'), size: '30px', label: t('LOADING') }}
+      >
         <>
           <Button
             variant='backlink'
@@ -27,7 +33,9 @@ const UpdatePensionStartPage: React.FC<{
             key='StartPageBacklink'
             attributes={{ type: 'link' }}
           />
-          <MainWrapperFull>
+          <MainWrapperFull
+            title={t('TELL_US_IF_YOU_HAVE_STOPPED_RECEIVING_PENSION_PAYMENTS', { lng: 'en' })}
+          >
             <div className='govuk-grid-row'>
               <div className='govuk-grid-column-two-thirds'>
                 <h1 className='govuk-heading-l'>
@@ -37,6 +45,9 @@ const UpdatePensionStartPage: React.FC<{
                   {t('USE_THIS_SERVICE_TO_TELL_US_ABOUT_PENSION_YOU_HAVE_STOPPED_RECEIVING')}
                 </p>
                 <h2 className='govuk-heading-m'>{t('BEFORE_YOU_START')}</h2>
+                <p className='govuk-body'>
+                  {`${t('YOU_CAN_ONLY_USE_IF_ATLEAST')} ${pensionPeriod} ${t('DAYS_SINCE_PENSION_END')}`}
+                </p>
                 <p className='govuk-body'>
                   {t('YOU_WILL_NEED_P45_PART_1A_FROM_YOUR_PENSION_PROVIDER')}
                 </p>
@@ -51,6 +62,7 @@ const UpdatePensionStartPage: React.FC<{
                   >
                     {t('READ_THE_WORKERS_GUILD_TO_P45')}
                   </a>
+                  .
                 </p>
                 <p className='govuk-body'>
                   {t('FROM_PART_1A_YOU_WILL_NEED_TO_PROVIDE_SOME_DETAILS')}
@@ -62,18 +74,13 @@ const UpdatePensionStartPage: React.FC<{
                   <li>{t('THE_WEEK_OR_MONTH_NUMBER')}</li>
                   <li>{t('THE_TOTAL_PAY_AND_TAX')}</li>
                 </ul>
-                <div>
-                  <Button variant='start' onClick={() => onStart()}>
-                    {t('START_NOW')}
-                  </Button>
-                </div>
+                <GDSStartButton href='#' onClick={() => onStart()} text={t('START_NOW')} />
               </div>
             </div>
           </MainWrapperFull>
         </>
-      )}
-      {serviceShuttered && <ShutterServicePage />}
-    </>
+      </LoadingWrapper>
+    </ShutteredServiceWrapper>
   );
 };
 

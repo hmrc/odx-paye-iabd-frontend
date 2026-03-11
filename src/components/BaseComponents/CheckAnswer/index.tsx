@@ -39,13 +39,27 @@ export default function GDSCheckAnswers(props: HmrcOdxTestProps) {
 
   const formattedValueOrValue = formattedValue || value;
   const placeholderOrHelperText = placeholder || helperText;
+
+  let cyValue = formattedValueOrValue;
+  let hintValue = '';
+  if (!Array.isArray(formattedValueOrValue) && formattedValueOrValue?.includes('!!hint!!')) {
+    [cyValue, hintValue] = formattedValueOrValue.split('!!hint!!');
+  }
+
   const renderCYAValue = () =>
     !isValueNotBlank ? (
       <a href='#' className='govuk-link' onClick={handleOnClick} data-step-id={stepId}>
         {placeholderOrHelperText}
       </a>
     ) : (
-      <>{formattedValueOrValue}</>
+      <>
+        <>{cyValue}</>
+        {hintValue && (
+          <span className='govuk-caption-m hmrc-caption-m'>
+            {`${placeholderOrHelperText} ${hintValue}`}
+          </span>
+        )}
+      </>
     );
 
   return (

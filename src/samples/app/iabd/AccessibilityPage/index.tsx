@@ -19,9 +19,9 @@ export default function Accessibility() {
 
   return (
     <>
-      <AppHeader appname={t('PAYE_SERVICE')} hasLanguageToggle isPegaApp={false} />
+      <AppHeader />
       <div className='govuk-width-container'>
-        <MainWrapper>
+        <MainWrapper title={t('ACCESSIBILITY', { lng: 'en' })}>
           {/* <h1 className='govuk-heading-xl'>{t('ACCESSIBLITY_STATEMENT_FOR_CHB_SERVICE')}</h1>
           <p className='govuk-body-l'>{t('THIS_AS_EXPLAINS_HOW')}</p>
           <p className='govuk-body'>

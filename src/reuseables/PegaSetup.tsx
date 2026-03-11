@@ -42,7 +42,6 @@ export function establishPCoreSubscriptions({
    * Registers close active container on end of assignment processing
    ********************************************* */
   function showResolutionScreen() {
-    // PM!! getClaimsCaseID();
     const context = PCore.getContainerUtils().getActiveContainerItemName(
       `${PCore.getConstants().APP.APP}/primary`
     );
@@ -50,7 +49,6 @@ export function establishPCoreSubscriptions({
     const id = PCore.getStoreValue('.ID', 'caseInfo', context);
     setCaseStatus(status);
     setCaseId(id);
-    // console.log('SUBEVENT! closeActiveContainerOnEndOfAssignment');
     PCore.getContainerUtils().closeContainerItem(
       PCore.getContainerUtils().getActiveContainerItemContext('app/primary'),
       { skipDirtyCheck: true }
@@ -110,8 +108,6 @@ export function establishPCoreSubscriptions({
     PCore.getConstants().PUB_SUB_EVENTS.EVENT_CANCEL,
     () => {
       setAssignmentCancelled(true);
-      // PM!! setShowPortalBanner(true);
-      // PM!! setIsCreateCaseBlocked(false);
     },
     'cancelAssignment'
   );
@@ -142,7 +138,6 @@ export function establishPCoreSubscriptions({
   PCore.getPubSubUtils().subscribe(
     PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.ASSIGNMENT_OPENED,
     () => {
-      // console.log("SUBEVENT!! showPegaWhenAssignmentOpened")
       setShowPega(true);
       setTimeout(() => {
         PCore.getPubSubUtils().publish('callLocalActionSilently', {});
@@ -157,7 +152,6 @@ export function establishPCoreSubscriptions({
   PCore.getPubSubUtils().subscribe(
     PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CASE_CREATED,
     () => {
-      // console.log("SUBEVENT!! showPegaWhenCaseCreated")
       setShowPega(true);
     },
     'showPegaWhenCaseCreated'
@@ -167,9 +161,6 @@ export function establishPCoreSubscriptions({
     PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED,
     () => {
       setAssignmentCancelled(true);
-      // PM!! setShowPortalBanner(true);
-      // PM!! setIsCreateCaseBlocked(false);
-      // console.log('SUBEVENT!!! savedCase');
     },
     'savedCase'
   );
@@ -231,7 +222,6 @@ function initialRender(inRenderObj, setAssignmentPConnect, _AppContextValues: Ap
 
   const thePConn = props.getPConnect();
   setAssignmentPConnect(thePConn);
-  // PM!! setPConn(thePConn);
 
   let target: any = null;
 
@@ -270,12 +260,6 @@ function initialRender(inRenderObj, setAssignmentPConnect, _AppContextValues: Ap
     // eslint-disable-next-line no-console
     console.log('Error - pega root element not found');
   }
-
-  /* const root = render(target); // createRoot(container!) if you use TypeScript
-    root.render(<>{theComponent}</>); */
-
-  // Initial render to show that we have a PConnect and can render in the target location
-  // render( <div>EmbeddedTopLevel initialRender in {domContainerID} with PConn of {componentName}</div>, target);
 }
 
 /*
@@ -309,26 +293,6 @@ export function startMashup(
       setAssignmentCancelled,
       setContainerClosed
     });
-    // PM!! setShowAppName(true);
-
-    // Fetches timeout length config
-    // PM!!
-    /* getSdkConfig()
-        .then(sdkConfig => {
-          if (sdkConfig.timeoutConfig.secondsTilWarning)
-            milisecondsTilWarning = sdkConfig.timeoutConfig.secondsTilWarning * 1000;
-          if (sdkConfig.timeoutConfig.secondsTilLogout)
-            milisecondsTilSignout = sdkConfig.timeoutConfig.secondsTilLogout * 1000;
-          if (sdkConfig.timeoutConfig.secondsTillStartNowUnblocked)
-            secondsTillStartNowUnblocked =
-              sdkConfig.timeoutConfig.secondsTillStartNowUnblocked * 1000;
-        })
-        .finally(() => {
-          // Subscribe to any store change to reset timeout counter
-          PCore.getStore().subscribe(() => staySignedIn(setShowTimeoutModal, false));
-          initTimeout(setShowTimeoutModal);
-        });
-        */
 
     // TODO : Consider refactoring 'en_GB' reference as this may need to be set elsewhere
     PCore.getEnvironmentInfo().setLocale(sessionStorage.getItem('rsdk_locale') || 'en_GB');
@@ -342,32 +306,11 @@ export function startMashup(
   });
 
   // Initialize the SdkComponentMap (local and pega-provided)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getSdkComponentMap(localSdkComponentMap).then((theComponentMap: any) => {
+  getSdkComponentMap(localSdkComponentMap).then(() => {
     // eslint-disable-next-line no-console
     console.log(`SdkComponentMap initialized`);
   });
 
-  // @ts-ignore
-  /* const dpagePromise = PCore.getDataPageUtils()
-      .getPageDataAsync('D_ShutterLookup', 'root', {
-        FeatureID: 'highincome',
-        FeatureType: 'highincome'
-      }) as Promise<any>;
-      dpagePromise.then(resp => {
-        const isShuttered = resp.Shuttered;
-        if (isShuttered) {
-          setShutterServicePage(true);
-          // PM!! resetAppDisplay();
-        } else {
-          setShutterServicePage(false);
-          // PM!!  displayUserPortal();
-        }
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.error(err);
-      }); */
   checkShutterService({ setShutterServicePage });
 
   // load the Mashup and handle the onPCoreEntry response that establishes the
@@ -412,10 +355,6 @@ export const useStartMashup = (_AppContextValues: AppContextValues) => {
       }
     });
 
-    document.addEventListener('SdkLoggedOut', () => {
-      window.location.href = 'https://www.gov.uk/government/organisations/hm-revenue-customs';
-    });
-
     // Subscriptions can't be done until onPCoreReady.
     //  So we subscribe there. But unsubscribe when this
     //  component is unmounted (in function returned from this effect)
@@ -429,28 +368,6 @@ export const useStartMashup = (_AppContextValues: AppContextValues) => {
       PCore?.getPubSubUtils().unsubscribe('CustomAssignmentFinished');
       PCore?.getPubSubUtils().unsubscribe('closeContainer');
     };
-    // PM!!
-    /*
-    return function cleanupSubscriptions() {
-      PCore?.getPubSubUtils().unsubscribe(
-        PCore.getConstants().PUB_SUB_EVENTS.EVENT_CANCEL,
-        'cancelAssignment'
-      );
-      PCore?.getPubSubUtils().unsubscribe(
-        PCore.getConstants().PUB_SUB_EVENTS.ASSIGNMENT_OPENED,
-        'continueAssignment'
-      );
-      PCore?.getPubSubUtils().unsubscribe(
-        PCore.getConstants().PUB_SUB_EVENTS.CASE_OPENED,
-        'continueCase'
-      );
-
-      PCore?.getPubSubUtils().unsubscribe('closeContainer');
-      PCore?.getPubSubUtils().unsubscribe(
-        PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.END_OF_ASSIGNMENT_PROCESSING,
-        'assignmentFinished'
-      );
-    }; */
   }, []);
 
   const renderRootComponent = () => {

@@ -8,12 +8,21 @@ import {
   getTESLinksOnLang
 } from '../../../../components/helpers/utils';
 import { AllowanceObject } from './PayeCurrentYearTypes';
+import { EventType, InteractionTracker } from 'hmrc-odx-features-and-functions';
+import { callClientActionDataPage } from '../eventTrackingConfig';
+import DeductionHintText from './TaxCodeDeduction/DeductionHintText';
+import isKnownExplainerPage from './TaxCodeDeduction/DeductionUtils';
 
 interface TaxFreeAmountDetailsProps {
   allowances: AllowanceObject[];
   personalAllowances: AllowanceObject[];
   deductions: AllowanceObject[];
-
+  comingFrom: string;
+  redirectToDeductionExplainerpage: (
+    comingFrom: string,
+    explainerPage: string,
+    SourceAmount: string
+  ) => void;
   handleLinkClick: (d: string) => void;
 }
 
@@ -21,10 +30,55 @@ const TaxFreeAmountDetails = ({
   allowances,
   personalAllowances,
   deductions,
-  handleLinkClick
+  handleLinkClick,
+  comingFrom,
+  redirectToDeductionExplainerpage
 }: TaxFreeAmountDetailsProps) => {
   const currentLang = getCurrentLang();
   const { t } = useTranslation();
+
+  const renderLink = deduction => {
+    const tesLink: string = deduction?.TESLinks?.[0]?.Content?.[0]?.pyURLContent;
+    const explainerPage = tesLink?.toLowerCase();
+    const knownExplainerPage = isKnownExplainerPage(explainerPage) ? explainerPage : null;
+
+    return (
+      <>
+        <p className='govuk-body'>
+          <a
+            href='#'
+            className='govuk-link'
+            onClick={e => {
+              e.preventDefault();
+              if (knownExplainerPage) {
+                redirectToDeductionExplainerpage(
+                  comingFrom,
+                  explainerPage,
+                  deduction?.SourceAmount
+                );
+              } else {
+                const interactionTracker = new InteractionTracker({
+                  url: null,
+                  apiCallback: callClientActionDataPage
+                });
+                interactionTracker.logEvent(
+                  EventType.Outbound,
+                  `${getTESLinksOnLang(deduction, currentLang)?.[0]?.Name} ${tesLink}`,
+                  {}
+                );
+                handleLinkClick(tesLink);
+              }
+            }}
+          >
+            {getTESLinksOnLang(deduction, currentLang)?.[0]?.Name}
+          </a>
+        </p>
+        {knownExplainerPage && (
+          <DeductionHintText explainerPage={explainerPage} deduction={deduction} />
+        )}
+      </>
+    );
+  };
 
   return (
     <>
@@ -49,7 +103,7 @@ const TaxFreeAmountDetails = ({
 
       {allowances?.length > 0 && (
         <>
-          <h2 className='govuk-heading-s'>{t('WHAT_INCREASE_YOUR_TAX_FREE_AMOUNT')}</h2>
+          <h3 className='govuk-heading-s'>{t('WHAT_INCREASE_YOUR_TAX_FREE_AMOUNT')}</h3>
           <dl className='govuk-summary-list'>
             {allowances.map((allowance, index) => (
               <div
@@ -70,7 +124,7 @@ const TaxFreeAmountDetails = ({
 
       {deductions?.length > 0 && (
         <>
-          <h2 className='govuk-heading-s'>{t('WHAT_DECREASE_YOUR_TAX_FREE_AMOUNT')}</h2>
+          <h3 className='govuk-heading-s'>{t('WHAT_DECREASE_YOUR_TAX_FREE_AMOUNT')}</h3>
           <dl className='govuk-summary-list'>
             {deductions.map((deduction, index) => (
               <div
@@ -78,20 +132,9 @@ const TaxFreeAmountDetails = ({
                 key={generateKey(deduction?.Content[0]?.pyKeyString, index)}
               >
                 <dt className='govuk-summary-list__key govuk-!-font-weight-regular govuk-!-width-one-half'>
-                  {deduction?.TESLinks ? (
-                    <a
-                      href='#'
-                      className='govuk-link'
-                      onClick={e => {
-                        e.preventDefault();
-                        handleLinkClick(deduction?.TESLinks?.[0]?.Content?.[0]?.pyURLContent);
-                      }}
-                    >
-                      {getTESLinksOnLang(deduction, currentLang)?.[0]?.Name}
-                    </a>
-                  ) : (
-                    getHeadingContent(deduction?.Content, currentLang)?.Name
-                  )}
+                  {deduction?.TESLinks
+                    ? renderLink(deduction)
+                    : getHeadingContent(deduction?.Content, currentLang)?.Name}
                 </dt>
                 <dd className='govuk-summary-list__value text-align-tax-free-amount'>
                   {formatCurrency(deduction?.AdjustedAmount, true)}

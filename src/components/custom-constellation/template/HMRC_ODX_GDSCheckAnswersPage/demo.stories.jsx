@@ -128,7 +128,7 @@ const renderField = resolvedProps => {
   return <FieldValueList variant={variant} fields={[{ name: label, value: val }]} key={key} />;
 };
 
-export const baseHmrcOdxGdsCheckAnswersPage = () => {
+export const BaseHmrcOdxGdsCheckAnswersPage = () => {
   const [firstName, setFirstName] = useState('John');
   const [middleName, setMiddleName] = useState('');
   const [lastName, setLastName] = useState('Joe');
@@ -155,8 +155,7 @@ export const baseHmrcOdxGdsCheckAnswersPage = () => {
         },
         getActionsApi: () => {
           return {
-            updateFieldValue: () => {
-            },
+            updateFieldValue: () => {},
             triggerFieldChange: () => {
               /* nothing */
             }
