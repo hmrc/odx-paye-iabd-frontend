@@ -16,8 +16,7 @@ if (!window.PCore) {
 
 window.PCore.getDataPageUtils = () => {
   return {
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-    getDataAsync: (dataView, parameters, options) => {
+    getDataAsync: dataView => {
       return new Promise(resolve => {
         if (dataView === 'D_CaseTaskList') {
           resolve({

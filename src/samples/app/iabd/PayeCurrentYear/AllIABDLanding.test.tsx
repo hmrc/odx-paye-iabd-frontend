@@ -7,13 +7,20 @@ import { mockGetSdkConfigWithBasepath } from '../../../../../tests/mocks/getSdkC
 import { act } from 'react-dom/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
 import AllIABDLanding from './AllIABDLanding';
+import { AnalyticsConfigProvider } from 'hmrc-odx-features-and-functions';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
 }));
 
-const goBack = jest.fn();
+const mockApiCallback = jest.fn();
+
+const redirectCurrentYearPage = jest.fn();
+const redirectToUnderstandYourTaxPage = jest.fn();
 const handleLinkClick = jest.fn();
+const redirectToViewTimelineDetailsPage = jest.fn();
+const redirectToAllIABDLandingPage = jest.fn();
+const handleMoreInformationClick = jest.fn();
 
 describe('AllIABDLanding Component', () => {
   const mockGetPageDataAsync = jest.fn();
@@ -46,8 +53,13 @@ describe('AllIABDLanding Component', () => {
   });
 
   const AllIABDLandingProps = {
-    goBack,
-    handleLinkClick
+    redirectCurrentYearPage,
+    redirectToUnderstandYourTaxPage,
+    handleLinkClick,
+    redirectToViewTimelineDetailsPage,
+    redirectToAllIABDLandingPage,
+    handleMoreInformationClick,
+    comingFromPage: ''
   };
 
   const mockData = {
@@ -118,26 +130,31 @@ describe('AllIABDLanding Component', () => {
       t.result.current.i18n?.changeLanguage('EN');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AllIABDLanding {...AllIABDLandingProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <AllIABDLanding {...AllIABDLandingProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
-    const spanElementWel = screen.getByText('mock name Non-Coded Income');
+    const spanElementWel = screen.getByText('Non-Coded Income', { selector: 'span', exact: true });
     expect(spanElementWel).toBeInTheDocument();
     expect(spanElementWel).toHaveClass('govuk-visually-hidden');
 
     expect(screen.getByText('Back')).toBeInTheDocument();
-    expect(screen.getByText('View and update information HMRC has about you')).toBeInTheDocument();
-    expect(screen.getAllByText('Income')[0]).toBeInTheDocument();
+    expect(
+      screen.getByText('Other income, allowances, employment benefits and deductions')
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('Other income')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Item')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Amount')[0]).toBeInTheDocument();
     expect(screen.getAllByText('Actions')[0]).toBeInTheDocument();
-    expect(screen.getByText('Non-Coded Income')).toBeInTheDocument();
+    expect(
+      screen.getByText('Non-Coded Income', { selector: 'th', exact: true })
+    ).toBeInTheDocument();
     expect(screen.getByText('£10.56')).toBeInTheDocument();
-    expect(screen.getByText('No actions')[0]).toBeInTheDocument();
     expect(screen.getByText('Allowances')).toBeInTheDocument();
     expect(screen.getByText('You have no allowances.')).toBeInTheDocument();
-    expect(screen.getByText('Benefits')).toBeInTheDocument();
+    expect(screen.getByText('Employment benefits')).toBeInTheDocument();
     expect(screen.getByText('Employment')).toBeInTheDocument();
     expect(screen.getByText('Car Fuel Benefit')).toBeInTheDocument();
     expect(screen.getByText('Deductions')).toBeInTheDocument();
@@ -163,7 +180,9 @@ describe('AllIABDLanding Component', () => {
       t.result.current.i18n?.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AllIABDLanding {...AllIABDLandingProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <AllIABDLanding {...AllIABDLandingProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -192,7 +211,9 @@ describe('AllIABDLanding Component', () => {
       t.result.current.i18n?.changeLanguage('cy');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AllIABDLanding {...AllIABDLandingProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <AllIABDLanding {...AllIABDLandingProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });

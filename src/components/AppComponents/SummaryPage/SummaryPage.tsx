@@ -1,10 +1,20 @@
-import React, { useEffect } from 'react';
+import { forwardRef, useEffect } from 'react';
 import MainWrapper from '../../BaseComponents/MainWrapper';
 import Button from '../../BaseComponents/Button/Button';
 import ParsedHTML from '../../helpers/formatters/ParsedHtml';
 import setPageTitle from '../../helpers/setPageTitleHelpers';
 
-export default function SummaryPage(props) {
+interface SummaryPageProps {
+  summaryTitle: string;
+  summaryContent: string;
+  summaryBanner: string;
+  backlinkProps: {
+    backlinkAction: () => void;
+    backlinkText: string;
+  };
+}
+
+const SummaryPage = forwardRef<HTMLDivElement, any>((props: SummaryPageProps, ref) => {
   const { summaryTitle, summaryContent, summaryBanner, backlinkProps } = props;
   const { backlinkAction, backlinkText } = backlinkProps;
 
@@ -19,7 +29,7 @@ export default function SummaryPage(props) {
           {backlinkText}
         </Button>
       )}
-      <MainWrapper>
+      <MainWrapper title={summaryBanner && summaryBanner !== '' ? summaryBanner : summaryTitle}>
         {summaryBanner && summaryBanner !== '' ? (
           <div className='govuk-panel govuk-panel--confirmation govuk-!-margin-bottom-7'>
             <h1 className='govuk-panel__title'> {summaryBanner} </h1>
@@ -27,10 +37,12 @@ export default function SummaryPage(props) {
         ) : (
           <h1 className='govuk-heading-l'>{summaryTitle}</h1>
         )}
-        <div>
+        <div ref={ref}>
           <ParsedHTML htmlString={summaryContent} />
         </div>
       </MainWrapper>
     </>
   );
-}
+});
+
+export default SummaryPage;

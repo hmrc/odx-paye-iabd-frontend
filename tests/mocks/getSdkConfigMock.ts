@@ -10,7 +10,13 @@ export const mockGetSdkConfigWithBasepath = () => {
   const mockedGetSdkConfig = mockGetSdkConfig();
   mockedGetSdkConfig.mockResolvedValue({
     serverConfig: {
-      sdkContentServerUrl: 'https://localhost:3502/' // Todo: Can be moved to env specific config.
+      sdkContentServerUrl: 'https://localhost:3502/', // Todo: Can be moved to env specific config.
+      sdkHmrcURL: 'https://www.staging.tax.service.gov.uk/',
+      infinityRestServerUrl: 'https://localhost:3502/',
+      appAlias: 'paye-dev'
+    },
+    authConfig: {
+      authService: 'gg-paye-dev'
     }
   });
   return mockedGetSdkConfig;

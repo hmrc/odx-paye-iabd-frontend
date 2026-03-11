@@ -11,8 +11,7 @@ export default {
   component: HmrcOdxGdsButton
 };
 
-export const baseHmrcOdxGdsButton = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export const BaseHmrcOdxGdsButton = () => {
   const [value, setValue] = useState(configProps.value);
 
   const props = {

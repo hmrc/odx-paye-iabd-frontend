@@ -29,9 +29,7 @@ export const BaseHmrcOdxGdsTextPresentation = () => {
   window.PCore.getFormUtils = () => {
     return {
       getEditableFields: () => {
-        return [
-          { name: 'HmrcOdxGdsTextPresentation' }
-        ];
+        return [{ name: 'HmrcOdxGdsTextPresentation' }];
       }
     };
   };

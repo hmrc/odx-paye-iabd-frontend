@@ -204,8 +204,7 @@ export const BaseHmrcOdxGdsTaskListTemplate = () => {
 
   window.PCore.getDataPageUtils = () => {
     return {
-      // eslint-disable-next-line no-unused-vars
-      getDataAsync: (dataView, parameters, options) => {
+      getDataAsync: dataView => {
         return new Promise(resolve => {
           if (dataView === 'D_CaseTaskList') {
             resolve({

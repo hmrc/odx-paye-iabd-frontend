@@ -17,10 +17,24 @@ import { TimeLineEvent } from '../../../../reuseables/Types/TimeLineEvents';
 import LoadingSpinner from '../../../../components/helpers/LoadingSpinner/LoadingSpinner';
 import ErrorMessage from '../ErrorPage/errorMessage';
 import { WIMTCDetails } from './PayeCurrentYearTypes';
-import ShutterServicePage from '../../../../components/AppComponents/ShutterServicePage';
-import useServiceShuttered from '../../../../components/helpers/hooks/useServiceShuttered';
 import TaxCodeExplainer from './TaxCodeExplainer';
 import TaxFreeAmountTable from './TaxFreeAmountTable';
+import ShutteredServiceWrapper from '../../../../components/AppComponents/ShutterService/ShutteredServiceWrapper';
+import useServiceShuttered from '../../../../components/helpers/hooks/useServiceShuttered';
+import CategoryD7 from './CatDPages/CategoryD7';
+import CategoryD6 from './CatDPages/CategoryD6';
+import CategoryD5 from './CatDPages/CategoryD5';
+import CategoryD4 from './CatDPages/CategoryD4';
+import CategoryD3 from './CatDPages/CategoryD3';
+import CategoryD2 from './CatDPages/CategoryD2';
+import CategoryD1 from './CatDPages/CategoryD1';
+import CategoryD8 from './CatDPages/CategoryD8';
+import CategoryD9 from './CatDPages/CategoryD9';
+import CategoryD10 from './CatDPages/CategoryD10';
+import CategoryC1 from './CatCpages/CategoryC1';
+import CategoryC from './CatCpages/CategoryC';
+import { withPageTracking } from 'hmrc-odx-features-and-functions';
+import LoadingWrapper from '../../../../components/helpers/LoadingSpinner/LoadingWrapper';
 
 interface ViewTimelineDetailsProps {
   timelineDetails: TimeLineEvent;
@@ -30,8 +44,13 @@ interface ViewTimelineDetailsProps {
   eventType: string;
 
   handleLinkClick: (d: string) => void;
-
   redirectToAllIABDLandingPage: (d: string) => void;
+  handleDetailExplainerLinkClick: (h: string) => void;
+  redirectToDeductionExplainerpage: (
+    comingFrom: string,
+    explainerPage: string,
+    SourceAmount: string
+  ) => void;
 }
 
 const ViewTimelineDetails = ({
@@ -40,14 +59,17 @@ const ViewTimelineDetails = ({
   redirectCurrentYearPage,
   eventType,
   handleLinkClick,
-  redirectToAllIABDLandingPage
+  redirectToAllIABDLandingPage,
+  handleDetailExplainerLinkClick,
+  redirectToDeductionExplainerpage
 }: ViewTimelineDetailsProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsgArr, setErrorMsgArr] = useState([]);
   const [taxSummaryList, setTaxSummaryList] = useState(null);
-  const serviceShuttered = useServiceShuttered();
+
   const { t } = useTranslation();
   const lang = getCurrentLang();
+  const { serviceShuttered, isLoading: isShutteredServiceLoading } = useServiceShuttered();
 
   const templateType: string = timelineDetails?.pyTemplateDataField?.toLocaleLowerCase();
   const isActivePension: boolean = timelineDetails?.ActiveOccupationalPension;
@@ -105,35 +127,82 @@ const ViewTimelineDetails = ({
     }
   }, []);
 
-  function renderBody(pyTemplateDataField: string): React.ReactNode {
-    let templeteBody;
-
-    switch (pyTemplateDataField) {
-      case 'c':
-        templeteBody = (
-          <>
-            <p className='govuk-body'>{t('EXPLAINER_CAT_C')}</p>
-            <p className='govuk-body'>{t('YOU_DO_NOT_DO_ANYTHING')}</p>
-          </>
-        );
-        break;
-      case 'a-increase':
-        templeteBody = (
+  function renderCategoryAContent(changeType: string): React.ReactNode {
+    switch (changeType) {
+      case 'increase':
+        return (
           <>
             <p className='govuk-body'>{t('EXPLAINER_CAT_A_BODY_INC')}</p>
             <p className='govuk-body'>{t('EXPLAINER_CAT_A_BODY')}</p>
             <p className='govuk-body'>{t('YOU_DO_NOT_DO_ANYTHING')}</p>
           </>
         );
-        break;
-      case 'a-decrease':
-        templeteBody = (
+      case 'decrease':
+        return (
           <>
             <p className='govuk-body'>{t('EXPLAINER_CAT_A_BODY_DEC')}</p>
             <p className='govuk-body'>{t('EXPLAINER_CAT_A_BODY')}</p>
             <p className='govuk-body'>{t('YOU_DO_NOT_DO_ANYTHING')}</p>
           </>
         );
+      default:
+        return null;
+    }
+  }
+
+  function renderBody(pyTemplateDataField: string): React.ReactNode {
+    let templeteBody;
+    const [category, changeType] = pyTemplateDataField?.includes('-')
+      ? pyTemplateDataField.split('-')
+      : [pyTemplateDataField, undefined];
+    switch (category) {
+      case 'c':
+        templeteBody = <CategoryC />;
+        break;
+      case 'c1':
+        templeteBody = <CategoryC1 />;
+        break;
+      case 'a':
+        templeteBody = renderCategoryAContent(changeType);
+        break;
+      case 'd2':
+        templeteBody = <CategoryD2 />;
+        break;
+      case 'd3':
+        templeteBody = <CategoryD3 />;
+        break;
+      case 'd4':
+        templeteBody = <CategoryD4 />;
+        break;
+      case 'd5':
+        templeteBody = <CategoryD5 />;
+        break;
+      case 'd6':
+        templeteBody = <CategoryD6 />;
+        break;
+      case 'd7':
+        templeteBody = <CategoryD7 />;
+        break;
+      case 'd8':
+        templeteBody = (
+          <CategoryD8 handleDetailExplainerLinkClick={handleDetailExplainerLinkClick} />
+        );
+        break;
+      case 'd9':
+        templeteBody = (
+          <CategoryD9 handleDetailExplainerLinkClick={handleDetailExplainerLinkClick} />
+        );
+        break;
+      case 'd1':
+        templeteBody = (
+          <CategoryD1
+            handleDetailExplainerLinkClick={handleDetailExplainerLinkClick}
+            dataType={changeType}
+          />
+        );
+        break;
+      case 'd10':
+        templeteBody = <CategoryD10 />;
         break;
       default:
         break;
@@ -156,6 +225,8 @@ const ViewTimelineDetails = ({
           personalAllowances={taxSummaryList?.PersonalAllowances}
           deductions={taxSummaryList?.CurrentDeductionsList}
           handleLinkClick={handleLinkClick}
+          redirectToDeductionExplainerpage={redirectToDeductionExplainerpage}
+          comingFrom='viewTimelineDetailsPage'
         />
         <p className='govuk-body'>
           {isActivePension
@@ -165,7 +236,7 @@ const ViewTimelineDetails = ({
             formatCurrency(timelineDetails?.NetCodedAllowance, true)}
           .
         </p>
-        {!isActivePension && isPrimaryEmployment && (
+        {isPrimaryEmployment && (
           <p className='govuk-body'>
             {t('IF_YOU_THINK_INCORRECT')}
             <a
@@ -197,11 +268,12 @@ const ViewTimelineDetails = ({
     );
   };
 
-  return isLoading ? (
-    <LoadingSpinner bottomText='Loading' size='30px' />
-  ) : (
-    <>
-      {!serviceShuttered && (
+  return (
+    <ShutteredServiceWrapper serviceIsShuttered={serviceShuttered}>
+      <LoadingWrapper
+        pageIsLoading={isLoading || isShutteredServiceLoading}
+        spinnerProps={{ bottomText: t('LOADING'), size: '30px', label: t('LOADING') }}
+      >
         <>
           <Button
             variant='backlink'
@@ -216,26 +288,29 @@ const ViewTimelineDetails = ({
             key='ViewTimelineBacklink'
             attributes={{ type: 'link' }}
           />
-          {errorMsgArr?.length > 0 && <ErrorMessage />}
-          {errorMsgArr?.length === 0 && (
-            <MainWrapperFull>
-              <div className='govuk-grid-row'>
-                <div className='govuk-grid-column-two-thirds'>
-                  <h1 className='govuk-heading-l govuk-!-margin-bottom-2'>
-                    {getHeadingContent(timelineDetails?.Content, lang)?.Description}
-                  </h1>
-                  <p className='govuk-hint'>{formatDate(timelineDetails?.DisplayDate)}</p>
-                  {renderBody(timelineDetails?.pyTemplateDataField?.toLocaleLowerCase())}
-                  {templateType === 'taxcode' && renderTemplateForTaxCode()}
+          <>
+            {errorMsgArr?.length > 0 && <ErrorMessage />}
+            {errorMsgArr?.length === 0 && (
+              <MainWrapperFull
+                title={getHeadingContent(timelineDetails?.Content, 'en')?.Description}
+              >
+                <div className='govuk-grid-row'>
+                  <div className='govuk-grid-column-two-thirds'>
+                    <h1 className='govuk-heading-l'>
+                      {getHeadingContent(timelineDetails?.Content, lang)?.Description}
+                    </h1>
+                    <p className='govuk-hint'>{formatDate(timelineDetails?.DisplayDate)}</p>
+                    {renderBody(timelineDetails?.pyTemplateDataField?.toLocaleLowerCase())}
+                    {templateType === 'taxcode' && renderTemplateForTaxCode()}
+                  </div>
                 </div>
-              </div>
-            </MainWrapperFull>
-          )}
+              </MainWrapperFull>
+            )}
+          </>
         </>
-      )}
-      {serviceShuttered && <ShutterServicePage />}
-    </>
+      </LoadingWrapper>
+    </ShutteredServiceWrapper>
   );
 };
 
-export default ViewTimelineDetails;
+export default withPageTracking(ViewTimelineDetails);

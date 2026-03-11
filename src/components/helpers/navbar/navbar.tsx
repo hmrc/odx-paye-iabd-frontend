@@ -21,6 +21,8 @@ const NavBar = props => {
       >
         <a
           href='#'
+          data-tracking-type='Outbound'
+          data-tracking-target={`${t('ACCOUNT_HOME')} /personal-account`}
           className='govuk-link hmrc-account-menu__link hmrc-account-menu__link--home'
           id='PersonalAccountLink'
           onClick={e => handleNavClick(e, '/personal-account')}
@@ -32,6 +34,8 @@ const NavBar = props => {
           <li>
             <a
               href='#'
+              data-tracking-type='Outbound'
+              data-tracking-target={`${t('MESSAGES')} /personal-account/messages`}
               className='govuk-link hmrc-account-menu__link'
               id='MessagesLink'
               onClick={e => handleNavClick(e, '/personal-account/messages')}
@@ -44,6 +48,8 @@ const NavBar = props => {
               href='#'
               className='govuk-link hmrc-account-menu__link'
               id='TrackerLink'
+              data-tracking-type='Outbound'
+              data-tracking-target={`${t('FORM_TRACKER')} /track`}
               onClick={e => handleNavClick(e, '/track')}
             >
               {t('FORM_TRACKER')}
@@ -54,6 +60,8 @@ const NavBar = props => {
               href='#'
               className='govuk-link hmrc-account-menu__link'
               id='ProfileSettingsLink'
+              data-tracking-type='Outbound'
+              data-tracking-target={`${t('PROFILE_AND_SETTINGS')} /personal-account/profile-and-settings`}
               onClick={e => handleNavClick(e, '/personal-account/profile-and-settings')}
             >
               {t('PROFILE_AND_SETTINGS')}
@@ -63,6 +71,7 @@ const NavBar = props => {
             <li>
               <a
                 href='#'
+                data-tracking-type='Signout'
                 id='signout-btn'
                 className='govuk-link hmrc-account-menu__link'
                 onClick={handleSignout}

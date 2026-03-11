@@ -10,6 +10,7 @@ import ErrorMessage from '../app/iabd/ErrorPage/errorMessage';
 import NoP45InfoPage from '../app/iabd/NoP45InfoPage/NoP45InfoPage';
 import ProtectedRoute from '../../components/HOC/ProtectedRoute';
 import NoP45PensionInfo from '../app/iabd/NoP45InfoPage/NoP45PensionInfo';
+import SignoutConfirmationPage from '../../components/AppComponents/Signout';
 
 const AppSelector = () => {
   const [i18nloaded, seti18nloaded] = useState(false);
@@ -43,6 +44,7 @@ const AppSelector = () => {
       <Route path='/error' element={<ErrorMessage />} />
       <Route path='/no-information' element={<NoP45InfoPage />} />
       <Route path='/no-pension-info' element={<NoP45PensionInfo />} />
+      <Route path='/signout' element={<SignoutConfirmationPage />} />
     </Routes>
   );
 };

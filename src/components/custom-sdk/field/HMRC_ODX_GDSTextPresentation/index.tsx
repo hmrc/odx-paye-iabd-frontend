@@ -7,7 +7,7 @@ import ReadOnlyValue from '../../../BaseComponents/ReadOnlyValue/ReadOnlyValue';
 import StyledHmrcOdxGdsTextPresentationWrapper from './styles';
 import GDSCheckAnswers from '../../../BaseComponents/CheckAnswer';
 import { ReadOnlyDefaultFormContext } from '../../../helpers/HMRCAppContext';
-import { checkStatus } from '../../../helpers/utils';
+import { checkStatus, formatCurrency } from '../../../helpers/utils';
 
 interface HmrcOdxGdsTextPresentationProps extends PConnFieldProps {
   stepId: any;
@@ -77,18 +77,6 @@ export default function HmrcOdxGdsTextPresentation(props: HmrcOdxGdsTextPresenta
     return val.replace(/\s+/g, '').toUpperCase();
   };
 
-  const formatCurrency2DP = (val: any) => {
-    const number = parseFloat(val.toString().replace(/[^\d.-]/g, ''));
-    const formattedNumber = number.toLocaleString('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-
-    return `${formattedNumber}`;
-  };
-
   let formattedValue: any;
 
   switch (GDSPresentationType) {
@@ -102,7 +90,7 @@ export default function HmrcOdxGdsTextPresentation(props: HmrcOdxGdsTextPresenta
       formattedValue = formatTrimCaps(value);
       break;
     case 'currency2dp':
-      formattedValue = formatCurrency2DP(value);
+      formattedValue = formatCurrency(value);
       break;
     case 'nino':
       formattedValue = formatNino(value);

@@ -17,13 +17,15 @@ const SummaryCardIncomeOtherSources = ({ details, handleNavClick }) => {
   return (
     <>
       <div className='govuk-summary-card__title-wrapper'>
-        <h4 className='govuk-summary-card__title'>{incomeType}</h4>
+        <h3 className='govuk-summary-card__title'>{incomeType}</h3>
         {tesLinkArrLang?.length > 0 && (
           <ul className='govuk-summary-card__actions'>
             <li className='govuk-summary-card__action'>
               <a
                 className='govuk-link'
                 href='#'
+                data-tracking-type='Outbound'
+                data-tracking-target={`${otherBenefits?.Name} ${incomeType} ${otherBenefits?.pyURLContent}`}
                 onClick={e => {
                   handleNavClick(e, otherBenefits?.pyURLContent);
                 }}

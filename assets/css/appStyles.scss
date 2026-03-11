@@ -3,6 +3,7 @@
 @import 'node_modules/hmrc-frontend/hmrc/components/language-select/_language-select.scss';
 @import 'node_modules/hmrc-frontend/hmrc/components/timeout-dialog/_timeout-dialog.scss';
 @import './location-autocomplete.min.css';
+@import "node_modules/hmrc-frontend/hmrc/components/user-research-banner/_user-research-banner.scss";
 
 .hmrc-timeline {
   border-left: 5px solid #1d70b8;
@@ -197,9 +198,6 @@ li {
     font-weight: 400;
   }
 
-  .govuk-msn {
-    margin-bottom: 10px;
-  }
 }
 
 /////////////////////////////////////////////////
@@ -229,10 +227,6 @@ li {
 
 .hmrc-account-menu__link:not(.hmrc-account-menu__link--menu) {
   outline-offset: -3px;
-}
-a:link,
-.govuk-link:link {
-  color: #1d70b8;
 }
 .hmrc-account-menu__link--home {
   padding: 12px 18px 8px 0;
@@ -282,10 +276,6 @@ a,
 .hmrc-account-menu__link:not(.hmrc-account-menu__link--menu) {
   outline-offset: -3px;
 }
-a:link,
-.govuk-link:link {
-  color: #1d70b8;
-}
 .hmrc-account-menu__main {
   z-index: 995;
   margin: 0;
@@ -299,10 +289,6 @@ a:link,
 
 .hmrc-account-menu__link:visited {
   color: #4a4a4a;
-}
-a:visited,
-.govuk-link:visited {
-  color: #4c2c92;
 }
 
 @media (min-width: 40.0625em) {
@@ -485,10 +471,6 @@ p,
   border: 1px solid #b1b4b6;
 }
 
-.govuk-footer__copyright-logo {
-  background-image: url(/assets/images/govuk-crest.svg) !important;
-}
-
 @media (min-width: 40.0625em) {
   .govuk-main-wrapper {
     padding-top: 10px;
@@ -544,34 +526,19 @@ p,
   text-align: right;
 }
 
-.js-disabled-language-toggle {
-  display: none;
-}
-
-.english-content,
-.welsh-content {
-  display: none;
-
-  #language-toggle {
-    display: none;
-  }
-
-  .govuk-link {
-    color: #4c2c92;
-    cursor: pointer;
-  }
-}
-
-#language-toggle:checked ~ .welsh-content {
-  display: block;
-}
-
-#language-toggle:not(:checked) ~ .english-content {
-  display: block;
-}
-
 @media (max-width: 40.0625em) {
   .text-align-tax-free-amount {
     text-align: left;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  @supports (margin: max(calc(0px))) {
+    .hmrc-user-research-banner {
+      .govuk-width-container {
+        margin-right: max(30px, calc(15px + env(safe-area-inset-right)));
+        margin-left: max(30px, calc(15px + env(safe-area-inset-left)));
+      }
+    }
   }
 }

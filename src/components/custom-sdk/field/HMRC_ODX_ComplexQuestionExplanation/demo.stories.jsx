@@ -16,8 +16,8 @@ export const BaseHmrcOdxComplexQuestionExplanation = () => {
 
   window.PCore.getStoreValue = () => {
     return {
-      dispatch: (value) => {
-        return value?.payload || {}
+      dispatch: value => {
+        return value?.payload || {};
       }
     };
   };

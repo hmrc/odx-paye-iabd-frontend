@@ -4,7 +4,8 @@ import { CurrentListOBJ } from '../../../samples/app/iabd/PayeCurrentYear/PayeCu
 import {
   getEmploymentName,
   getContentOnLanguageSelection,
-  getKey
+  getKey,
+  getEnglishContent
 } from '../../helpers/AllIABDLanding/AllIABDLandingUtils';
 import { formatCurrency } from '../../helpers/utils';
 
@@ -19,7 +20,7 @@ const BenefitsTable: React.FC<BenefitsTableProps> = ({ handleLinkClick, displayL
   if (!displayList?.length) {
     return (
       <>
-        <h2 className='govuk-heading-l'>{t('BENEFITS')}</h2>
+        <h2 className='govuk-heading-l'>{t('EMPLOYMENT_BENEFITS')}</h2>
         <p className='govuk-body'>{t('NO_BENEFITS')}</p>
       </>
     );
@@ -28,7 +29,7 @@ const BenefitsTable: React.FC<BenefitsTableProps> = ({ handleLinkClick, displayL
   return (
     <div className='scrollable-container'>
       <table className='govuk-table govuk-!-margin-top-9 govuk-table--small-text-until-tablet'>
-        <caption className='govuk-table__caption govuk-table__caption--l'>{t('BENEFITS')}</caption>
+        <caption className='govuk-table__caption govuk-table__caption--l'>{t('EMPLOYMENT_BENEFITS')}</caption>
         <thead className='govuk-table__head'>
           <tr className='govuk-table__row'>
             <th scope='col' className='govuk-table__header govuk-!-width-one-half'>
@@ -58,6 +59,8 @@ const BenefitsTable: React.FC<BenefitsTableProps> = ({ handleLinkClick, displayL
                   <a
                     className='govuk-link'
                     href='#'
+                    data-tracking-type='Outbound'
+                    data-tracking-target={`${getEnglishContent(benefit.TESLinks[0].Content)?.Name} ${getEnglishContent(benefit.Content)?.Name} <${benefit.TESLinks[0].Content[0]?.pyURLContent}>`}
                     onClick={e => {
                       e.preventDefault();
                       handleLinkClick(
@@ -67,7 +70,7 @@ const BenefitsTable: React.FC<BenefitsTableProps> = ({ handleLinkClick, displayL
                   >
                     {getContentOnLanguageSelection(benefit?.TESLinks[0]?.Content)?.Name}
                     <span className='govuk-visually-hidden'>
-                      {`${getContentOnLanguageSelection(benefit?.TESLinks[0]?.Content)?.Name} ${getContentOnLanguageSelection(benefit?.Content)?.Name}`}
+                      {getContentOnLanguageSelection(benefit?.Content)?.Name}
                     </span>
                   </a>
                 ) : (

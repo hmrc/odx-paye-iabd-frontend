@@ -21,7 +21,10 @@ export interface DetailsTypes {
   PayRollID: string;
   PAYENumber: string;
   EstimatedPayInterruptionFlag: boolean;
-  EmploymentSequenceNumber: string;
+  EmploymentSequenceNumber: number;
+  EmploymentType: string;
+  NetCodedAllowance: string;
+  IntegerSortingHolder: number;
 }
 
 export interface CurrentListOBJ {
@@ -92,4 +95,5 @@ export type AllowanceObject = {
   Content?: ContentObject[];
   AdjustedAmount?: string;
   TESLinks?: TESLinkContent[];
+  SourceAmount?: string;
 };

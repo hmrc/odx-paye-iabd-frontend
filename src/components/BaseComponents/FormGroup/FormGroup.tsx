@@ -48,13 +48,6 @@ export default function FormGroup({
     }
   }, [errorText, errorMsgs]);
 
-  useEffect(() => {
-    const linkToRemove = document.getElementById('dynamic-back-link');
-    if (linkToRemove) {
-      linkToRemove.remove();
-    }
-  }, []);
-
   const formGroupDivClasses = `govuk-form-group ${errMessage ? 'govuk-form-group--error' : ''} ${
     useCharacterCount ? 'govuk-character-count' : ''
   }`.trim();

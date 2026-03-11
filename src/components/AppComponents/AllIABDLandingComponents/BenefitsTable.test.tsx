@@ -47,7 +47,7 @@ describe('BenefitsTable', () => {
   it('renders table captions', () => {
     render(<BenefitsTable handleLinkClick={mockHandleLinkClick} displayList={mockData} />);
 
-    expect(screen.getByText('BENEFITS')).toBeInTheDocument();
+    expect(screen.getByText('EMPLOYMENT_BENEFITS')).toBeInTheDocument();
   });
 
   it('renders table headers', () => {
@@ -90,7 +90,6 @@ describe('BenefitsTable', () => {
 
   it('renders the hidden span with link name followed by IABD Benefit type', () => {
     render(<BenefitsTable handleLinkClick={mockHandleLinkClick} displayList={mockData} />);
-
-    expect(screen.getByText('Action1 Action2')).toBeInTheDocument();
+    expect(screen.getByText('Action2', { selector: 'span', exact: true })).toBeInTheDocument();
   });
 });

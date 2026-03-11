@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '../../../../components/BaseComponents/Button/Button';
 import { useTranslation } from 'react-i18next';
 import setPageTitle from '../../../../components/helpers/setPageTitleHelpers';
 import useServiceShuttered from '../../../../components/helpers/hooks/useServiceShuttered';
-import ShutterServicePage from '../../../../components/AppComponents/ShutterServicePage';
+import LoadingWrapper from '../../../../components/helpers/LoadingSpinner/LoadingWrapper';
+import { EventType, InteractionTracker } from 'hmrc-odx-features-and-functions';
+import { callClientActionDataPage } from '../eventTrackingConfig';
 import MainWrapperFull from '../../../../components/BaseComponents/MainWrapper/MainWrapperFull';
 import i18next from 'i18next';
+import ShutteredServiceWrapper from '../../../../components/AppComponents/ShutterService/ShutteredServiceWrapper';
+import { withPageTracking } from 'hmrc-odx-features-and-functions';
 
 interface InterruptionPageProps {
   onBack?: () => void;
@@ -19,9 +23,17 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
   handleNavClick
 }) => {
   const { t } = useTranslation();
-  const serviceShuttered = useServiceShuttered();
+  const {serviceShuttered, isLoading} = useServiceShuttered();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
+
+  const errorSummaryRef: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showError && errorSummaryRef.current) {
+      errorSummaryRef.current.focus();
+    }
+  }, [showError]);
 
   useEffect(() => {
     setPageTitle(showError);
@@ -30,9 +42,19 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
   const handleContinueClick = (e: any) => {
     if (!selectedOption) {
       setShowError(true);
+      errorSummaryRef.current?.focus();
       return;
     }
     if (selectedOption === 'yes') {
+      const interactionTracker = new InteractionTracker({
+        url: null,
+        apiCallback: callClientActionDataPage
+      });
+      interactionTracker.logEvent(
+        EventType.Outbound,
+        `Continue ${`/check-income-tax/update-income/how-to-update-income/${employmentSequenceNumber}`}`,
+        {}
+      );
       handleNavClick(
         e,
         `/check-income-tax/update-income/how-to-update-income/${employmentSequenceNumber}`
@@ -44,7 +66,6 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
-    setShowError(false);
   };
 
   const describedByIDs: string[] = [];
@@ -56,8 +77,11 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
     describedByIDs.length !== 0 ? { 'aria-describedby': describedByIDs.join(' ') } : {};
 
   return (
-    <>
-      {!serviceShuttered && (
+    <ShutteredServiceWrapper serviceIsShuttered={serviceShuttered}>
+      <LoadingWrapper
+                  pageIsLoading={isLoading}
+                  spinnerProps={{ bottomText: t('LOADING'), size: '30px', label: t('LOADING') }}
+                >
         <>
           <Button
             variant='backlink'
@@ -65,11 +89,16 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
             key='StartPageBacklink'
             attributes={{ type: 'link' }}
           />
-          <MainWrapperFull>
+          <MainWrapperFull title={t('UPDATE_ESTIMATED_PAY', { lng: 'en' })}>
             <div className='govuk-grid-row'>
               <div className='govuk-grid-column-two-thirds'>
                 {showError && (
-                  <div className='govuk-error-summary' data-module='govuk-error-summary'>
+                  <div
+                    className='govuk-error-summary'
+                    data-module='govuk-error-summary'
+                    ref={errorSummaryRef}
+                    tabIndex={-1}
+                  >
                     <div role='alert'>
                       <h2 className='govuk-error-summary__title'>{t('THERE_IS_A_PROBLEM')}</h2>
                       <div className='govuk-error-summary__body'>
@@ -101,6 +130,8 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
                     className='govuk-link hmrc-report-technical-issue '
                     rel='noreferrer noopener'
                     target='_blank'
+                    data-tracking-type='Outbound'
+                    data-tracking-target={`${t('READ_THE_GUIDANCE_ON_HIGH_INCOME')} https://www.gov.uk/child-benefit-tax-charge`}
                     href='https://www.gov.uk/child-benefit-tax-charge'
                   >
                     {t('READ_THE_GUIDANCE_ON_HIGH_INCOME')}
@@ -143,10 +174,7 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
                           value='no'
                           onChange={handleRadioChange}
                         />
-                        <label
-                          className='govuk-label govuk-radios__label'
-                          htmlFor='taxableIncome-2'
-                        >
+                        <label className='govuk-label govuk-radios__label' htmlFor='taxableIncome-2'>
                           {t('NO')}
                         </label>
                       </div>
@@ -160,10 +188,9 @@ const InterruptionPage: React.FC<InterruptionPageProps> = ({
             </div>
           </MainWrapperFull>
         </>
-      )}
-      {serviceShuttered && <ShutterServicePage />}
-    </>
+      </LoadingWrapper>
+    </ShutteredServiceWrapper>
   );
 };
 
-export default InterruptionPage;
+export default withPageTracking(InterruptionPage);

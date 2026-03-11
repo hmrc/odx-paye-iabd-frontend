@@ -1,4 +1,4 @@
-import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
+import { getSdkConfig, logout } from '@pega/auth/lib/sdk-auth-manager';
 import dayjs from 'dayjs';
 import { t } from 'i18next';
 import {
@@ -18,9 +18,12 @@ interface ErrorMessage {
 }
 
 export const scrollToTop = () => {
-  const position = document.getElementById('#main-content')?.offsetTop || 0;
-  document.body.scrollTop = position;
-  document.documentElement.scrollTop = position;
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  });
+  document.body.focus();
 };
 
 export const GBdate = (date: string) => {
@@ -160,12 +163,12 @@ export const getTaxCodeForTimeline = (taxCode: string) => {
   ];
 
   if (exceptionalTaxCodes.includes(taxCode?.split(' ')[0])) {
-    return t(taxCode.toUpperCase().replace(' ', '_').replace('WEEK1/MONTH1', 'WEEK1_MONTH1'));
+    return t(taxCode?.toUpperCase().replace(' ', '_').replace('WEEK1/MONTH1', 'WEEK1_MONTH1'));
   }
 };
 
-export const getTaxCode = (taxCode: string) => {
-  return taxCode.replace('Week1/Month1', t('WEEK1_MONTH1'));
+export const formatTaxCode = (taxCode: string) => {
+  return taxCode?.replace('Week1/Month1', t('WEEK1_MONTH1'));
 };
 
 export const generateKey = (name: string, index: number, employer: string = '') => {
@@ -179,21 +182,26 @@ export const formatCurrency = (
   if (typeof amount !== 'string' && typeof amount !== 'number') {
     return '';
   }
-  const stringAmount: string =
-    typeof amount === 'string' ? amount.trim() : amount.toString().trim();
 
-  if (isNaN(Number(stringAmount))) {
+  const cleanAmount = amount
+    .toString()
+    .replace(/[^\d.-]/g, '')
+    .trim();
+
+  if (isNaN(Number(cleanAmount))) {
     return '';
   }
 
-  const parsedAmount = Math.floor(Number(stringAmount) * 100) / 100;
+  const parsedAmount = Math.floor(Number(cleanAmount) * 100) / 100;
 
-  return `${new Intl.NumberFormat('en-GB', {
+  return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
     minimumFractionDigits: isTruncate ? 0 : 2,
     maximumFractionDigits: isTruncate ? 0 : 2
-  }).format(parsedAmount)}`;
+  })
+    .format(parsedAmount)
+    .replace('-', '−'); // Use minus sign (U+2212)
 };
 
 export const getTesLinks = (tesLinkID: string, tesLinks: any[]) => {
@@ -226,4 +234,46 @@ export function truncate(value: string | number) {
     return '';
   }
   return Math.trunc(+value);
+}
+
+export const triggerLogout = async (isAutoSignout?: boolean) => {
+  let authType = 'gg-paye';
+  await getSdkConfig().then(sdkConfig => {
+    const sdkConfigAuth = sdkConfig.authConfig;
+    authType = sdkConfigAuth.authService;
+  });
+  const authServiceList = {
+    'gg-paye': 'GovGateway-PAYE',
+    'gg-paye-dev': 'GovGateway-PAYE-dev'
+  };
+
+  const authService = authServiceList[authType];
+
+  // If the container / case is opened then close the container on signout to prevent locking.
+  const activeCase = PCore.getContainerUtils().getActiveContainerItemContext('app/primary');
+  if (activeCase) {
+    PCore.getContainerUtils().closeContainerItem(activeCase, { skipDirtyCheck: true });
+  }
+
+  type responseType = { URLResourcePath2: string };
+
+  PCore.getDataPageUtils()
+    .getPageDataAsync('D_AuthServiceLogout', 'root', {
+      AuthService: authService,
+      Application: isAutoSignout ? 'PAYE_Timeout' : 'PAYE'
+    })
+    .then((response: unknown) => {
+      const logoutUrl = (response as responseType).URLResourcePath2;
+
+      logout().then(() => {
+        if (logoutUrl) {
+          // Clear previous sessioStorage values
+          sessionStorage.clear();
+          window.location.href = logoutUrl;
+        }
+      });
+    });
+};
+export function getTransactionID(num: number): string {
+  return `Paye_${num}`;
 }

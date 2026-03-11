@@ -97,6 +97,8 @@ describe('payCurrentYearCard Component', () => {
   const beginIntrruptionPage = jest.fn();
   const handleNavClick = jest.fn();
   const handleViewAllDetailsClick = jest.fn();
+  const handleUnderstandYourTaxCodeClick = jest.fn();
+
   afterEach(cleanup);
 
   beforeEach(async () => {
@@ -110,7 +112,8 @@ describe('payCurrentYearCard Component', () => {
       type,
       handleNavClick,
       handleViewAllDetailsClick,
-      beginIntrruptionPage
+      beginIntrruptionPage,
+      handleUnderstandYourTaxCodeClick
     };
 
     await act(async () => {
@@ -134,7 +137,8 @@ describe('payCurrentYearCard Component', () => {
       type,
       handleNavClick,
       handleViewAllDetailsClick,
-      beginIntrruptionPage
+      beginIntrruptionPage,
+      handleUnderstandYourTaxCodeClick
     };
 
     await act(async () => {
@@ -197,7 +201,8 @@ describe('payCurrentYearCard Component', () => {
       type,
       handleNavClick,
       handleViewAllDetailsClick,
-      beginIntrruptionPage
+      beginIntrruptionPage,
+      handleUnderstandYourTaxCodeClick
     };
 
     await act(async () => {

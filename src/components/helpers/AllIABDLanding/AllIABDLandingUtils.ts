@@ -15,3 +15,7 @@ export const getKey = (item: { Content: TESObject[] }) => {
   const keyString = item?.Content?.[0]?.pyKeyString || '';
   return keyString + Math.floor(Math.random() * 100);
 };
+
+export const getEnglishContent = (contents: TESObject[]): TESObject | undefined => {
+  return contents?.find(content => content.Language.toUpperCase() === "EN");
+};

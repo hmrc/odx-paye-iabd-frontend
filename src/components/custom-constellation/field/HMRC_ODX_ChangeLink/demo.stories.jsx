@@ -11,8 +11,7 @@ export default {
   component: HmrcOdxChangeLink
 };
 
-export const baseHmrcOdxChangeLink = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export const BaseHmrcOdxChangeLink = () => {
   const [value, setValue] = useState(configProps.value);
 
   const props = {

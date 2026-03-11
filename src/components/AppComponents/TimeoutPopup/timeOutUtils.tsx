@@ -1,11 +1,13 @@
-import { logout, getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
+import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
+import { triggerLogout } from '../../helpers/utils';
+import { Dispatch, SetStateAction } from 'react';
 
 declare const PCore: any;
 
+let milisecondsTilSignout = 115 * 1000;
 let milisecondsTilWarning = 780 * 1000;
-let milisecondsTilSignout = 120 * 1000;
 
-export const settingTimer = async () => {
+export const settingTimer = async (): Promise<void> => {
   const sdkConfig = await getSdkConfig();
   if (sdkConfig.timeoutConfig.secondsTilWarning)
     milisecondsTilWarning = sdkConfig.timeoutConfig.secondsTilWarning * 1000;
@@ -21,41 +23,32 @@ export function clearTimer() {
   clearTimeout(signoutTimeout);
 }
 
-export const initTimeout = (showTimeoutModal, deleteData, isAuthorised) => {
-  // TODO - isAuthorised to be replaced by caseType from pega
-  // Fetches timeout length config
-  settingTimer();
+export const initTimeout = async (setShowTimeoutModal: Dispatch<SetStateAction<boolean>>) => {
+  // Set timers to sdk-config values
+  await settingTimer();
+
   clearTimeout(applicationTimeout);
   clearTimeout(signoutTimeout);
 
-  // Clears any existing timeouts and starts the timeout for warning, after set time shows the modal and starts signout timer
   applicationTimeout = setTimeout(() => {
-    // TODO - unauth and sessiontimeout functionality to be implemented
-    showTimeoutModal(true);
+    setShowTimeoutModal(true);
     signoutTimeout = setTimeout(() => {
-      if (isAuthorised) {
-        logout();
-      } else {
-        deleteData();
-        clearTimer();
-        // session ends and deleteData() (pega)
-      }
+      triggerLogout(true);
     }, milisecondsTilSignout);
   }, milisecondsTilWarning);
 };
 
-// Sends 'ping' to pega to keep session alive and then initiates the timeout
 export function staySignedIn(
-  setShowTimeoutModal,
-  claimsListApi,
-  deleteData = null,
-  isAuthorised = false,
+  setShowTimeoutModal: Dispatch<SetStateAction<boolean>>,
   refreshSignin = true
 ) {
   if (refreshSignin) {
-    // @ts-ignore
-    PCore.getDataPageUtils().getDataAsync(claimsListApi, 'root');
+    try {
+      PCore.getDataPageUtils().getPageDataAsync('D_PAYEDynamicConfig', 'root');
+    } catch (error) {
+      console.error('Error refreshing sign-in:', error); // eslint-disable-line no-console
+    }
   }
   setShowTimeoutModal(false);
-  initTimeout(setShowTimeoutModal, deleteData, isAuthorised);
+  initTimeout(setShowTimeoutModal);
 }

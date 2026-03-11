@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RenderReactCategory Given a valid templateName When template loads successfully Then it should render the loaded template and match snapshot 1`] = `<div />`;
+
+exports[`RenderReactCategory Given an invalid template import When dynamic import fails Then it should render nothing and match snapshot 1`] = `<div />`;
+
+exports[`RenderReactCategory Given no templateName When component renders Then it should render nothing and match snapshot 1`] = `<div />`;

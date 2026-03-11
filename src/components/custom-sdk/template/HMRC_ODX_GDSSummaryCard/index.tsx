@@ -131,7 +131,7 @@ export default function HmrcOdxGdsSummaryCard(props) {
 
                 return (
                   <Fragment key={key}>
-                    <div className='govuk-summary-list__row'>
+                    <div className='govuk-summary-list__row govuk-summary-list__row--no-actions'>
                       <dt className='govuk-summary-list__key'>{(field as any).props.label}</dt>
                       <dd className='govuk-summary-list__value'>{formattedValue}</dd>
                     </div>

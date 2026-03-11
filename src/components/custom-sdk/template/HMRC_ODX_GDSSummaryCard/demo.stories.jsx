@@ -18,11 +18,15 @@ export default {
 
 const Template = args => {
   const regionAChildren = pyReviewRawMetadata.children[0].children.map(child => {
-    return <div key={`regionA-${child.config.name}`}>{args.getPConnect().createComponent(child)}</div>;
+    return (
+      <div key={`regionA-${child.config.name}`}>{args.getPConnect().createComponent(child)}</div>
+    );
   });
 
   const regionBChildren = pyReviewRawMetadata.children[0].children.map(child => {
-    return <div key={`regionB-${child.config.name}`}>{args.getPConnect().createComponent(child)}</div>;
+    return (
+      <div key={`regionB-${child.config.name}`}>{args.getPConnect().createComponent(child)}</div>
+    );
   });
 
   // children is the child contained within the PizzaPlanetOdxGdsSummaryCard wrapper
@@ -154,7 +158,7 @@ export const Primary = () => {
     };
   };
 
-  const [value, setValue] = useState('');
+  const [, setValue] = useState('');
 
   const props = {
     handleOnClick: () => {

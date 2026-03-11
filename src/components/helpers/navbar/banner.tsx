@@ -1,13 +1,13 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
 
-const BetaBanner = () => {
+const BetaBanner = ({ title }) => {
   const { referrerURL, hmrcURL } = useHMRCExternalLinks();
   const { t } = useTranslation();
+  const requestURI = `contact/beta-feedback?service=IABD&referrerUrl=${referrerURL}`;
 
   return (
-    <div className='govuk-width-container'>
+    <>
       <div className='govuk-phase-banner'>
         <p className='govuk-phase-banner__content'>
           <strong className='govuk-tag govuk-phase-banner__content__tag'>{t('BETA')}</strong>
@@ -17,7 +17,9 @@ const BetaBanner = () => {
               className='govuk-link'
               target='_blank'
               rel='noreferrer noopener'
-              href={`${hmrcURL}contact/beta-feedback?service=422&referrerUrl=${referrerURL}`}
+              href={`${hmrcURL}${requestURI}`}
+              data-tracking-type='Outbound'
+              data-tracking-target={`Feedback <${title}> </${requestURI}>`}
             >
               {t('GIVE_YOUR_FEEDBACK')}
             </a>
@@ -26,7 +28,7 @@ const BetaBanner = () => {
         </p>
       </div>
       <div className='govuk-!-padding-bottom-6'></div>
-    </div>
+    </>
   );
 };
 

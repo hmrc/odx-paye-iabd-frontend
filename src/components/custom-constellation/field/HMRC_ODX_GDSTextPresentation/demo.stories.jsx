@@ -10,7 +10,7 @@ export default {
   component: HmrcOdxGdsTextPresentation
 };
 
-export const baseHmrcOdxGdsTextPresentation = () => {
+export const BaseHmrcOdxGdsTextPresentation = () => {
   if (!window.PCore) {
     window.PCore = {};
   }
@@ -30,9 +30,7 @@ export const baseHmrcOdxGdsTextPresentation = () => {
   window.PCore.getFormUtils = () => {
     return {
       getEditableFields: () => {
-        return [
-          { name: 'HmrcOdxGdsTextPresentation' }
-        ];
+        return [{ name: 'HmrcOdxGdsTextPresentation' }];
       }
     };
   };

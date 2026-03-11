@@ -9,11 +9,17 @@ const PayeCurrentYearLinks = (props: PayeCurrentYearLinkProps) => {
   const { handleLinkClick } = props;
   const { t } = useTranslation();
 
-  const SummaryCardLink = ({ href, onClick, title }) => (
+  const SummaryCardLink = ({ href, onClick, title, trackingDetails = {} }) => (
     <li className='govuk-summary-card-links govuk-card-list'>
       <div className='govuk-summary-card__title-wrapper'>
         <h3 className='govuk-summary-card__title'>
-          <a href={href} onClick={onClick} className='govuk-link'>
+          <a
+            data-tracking-type='Outbound'
+            href={href}
+            onClick={onClick}
+            className='govuk-link'
+            {...trackingDetails}
+          >
             {title}
             <svg
               className='govuk-button__start-icon'
@@ -46,11 +52,19 @@ const PayeCurrentYearLinks = (props: PayeCurrentYearLinkProps) => {
       <ul className='govuk-grid-column-one-half'>
         <SummaryCardLink
           href='#'
+          trackingDetails={{
+            'data-tracking-type': 'Outbound',
+            'data-tracking-target': `${t('CHECK_IF_YOU_CAN_CLAIM_EMPLOYEE_EXPENSES')} '/tax-relief-for-employees`
+          }}
           onClick={e => handleNavClick(e, '/tax-relief-for-employees')}
           title={t('CHECK_IF_YOU_CAN_CLAIM_EMPLOYEE_EXPENSES')}
         />
         <SummaryCardLink
           href='#'
+          trackingDetails={{
+            'data-tracking-type': 'Outbound',
+            'data-tracking-target': `${t('ADD_A_MISSING_INCOME_FROM_ANOTHER_SOURCE')} '/digital-forms/form/tell-us-about-other-income/draft/guide`
+          }}
           onClick={e =>
             handleNavClick(e, '/digital-forms/form/tell-us-about-other-income/draft/guide')
           }
@@ -58,6 +72,10 @@ const PayeCurrentYearLinks = (props: PayeCurrentYearLinkProps) => {
         />
         <SummaryCardLink
           href='#'
+          trackingDetails={{
+            'data-tracking-type': 'Outbound',
+            'data-tracking-target': `${t('ADD_INVESTMENT_INCOME')} '/digital-forms/form/tell-us-about-investment-income/draft/guide`
+          }}
           onClick={e =>
             handleNavClick(e, '/digital-forms/form/tell-us-about-investment-income/draft/guide')
           }

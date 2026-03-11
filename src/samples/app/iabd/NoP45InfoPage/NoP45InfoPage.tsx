@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppHeader from '../../../../components/AppComponents/AppHeader';
 import MainWrapperFull from '../../../../components/BaseComponents/MainWrapper/MainWrapperFull';
@@ -6,7 +6,6 @@ import AppFooter from '../../../../components/AppComponents/AppFooter';
 import useHMRCExternalLinks from '../../../../components/helpers/hooks/HMRCExternalLinks';
 import setPageTitle from '../../../../components/helpers/setPageTitleHelpers';
 import i18next from 'i18next';
-import BetaBanner from '../../../../components/helpers/navbar/banner';
 
 const NoP45InfoPage = () => {
   const { t } = useTranslation();
@@ -18,10 +17,10 @@ const NoP45InfoPage = () => {
 
   return (
     <>
-      <AppHeader appname={t('PAYE_SERVICE')} noNav hasLanguageToggle isPegaApp={false} />
+      <AppHeader />
 
       <div className='govuk-width-container'>
-        <MainWrapperFull>
+        <MainWrapperFull title={t('MY_P45_DOES_NOT_HAVE_THE_INFORMATION', { lng: 'en' })}>
           <div className='govuk-grid-row'>
             <div className='govuk-grid-column-two-thirds'>
               <h1 className='govuk-heading-l'>{t('MY_P45_DOES_NOT_HAVE_THE_INFORMATION')}</h1>
@@ -48,7 +47,6 @@ const NoP45InfoPage = () => {
           </div>
         </MainWrapperFull>
       </div>
-      <BetaBanner />
       <AppFooter />
     </>
   );

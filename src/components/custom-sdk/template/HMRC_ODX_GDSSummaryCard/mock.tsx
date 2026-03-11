@@ -1,5 +1,5 @@
 import { Input, DateInput, RadioButtonGroup, RadioButton } from '@pega/cosmos-react-core'; // components required for render
-// eslint-disable-next-line storybook/story-exports
+
 let updateVals = [];
 
 function updateProp(propName, value) {
@@ -145,7 +145,8 @@ export const regionChildrenResolved = [
     type: 'TextInput',
     readOnly: false,
     value: 'Jones',
-    label: 'Have you ever been known by any other last names or family names including your maiden name?',
+    label:
+      'Have you ever been known by any other last names or family names including your maiden name?',
     displayMode: 'LABELS_LEFT'
   },
   {
@@ -211,7 +212,8 @@ export const regionChildrenResolved = [
     type: 'RadioButtons',
     datasource: '@ASSOCIATED .IsSubjectToImmigrationControl', // meta
     inline: true,
-    label: 'Are you subject to immigration control now, or have you been at any time in the last 6 months?',
+    label:
+      'Are you subject to immigration control now, or have you been at any time in the last 6 months?',
     listType: 'associated',
     value: 'No'
   }

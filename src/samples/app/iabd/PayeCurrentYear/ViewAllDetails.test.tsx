@@ -7,6 +7,7 @@ import useHMRCExternalLinks from '../../../../components/helpers/hooks/HMRCExter
 import { mockGetSdkConfigWithBasepath } from '../../../../../tests/mocks/getSdkConfigMock';
 import { act } from 'react-dom/test-utils';
 import { renderHook } from '@testing-library/react-hooks';
+import { AnalyticsConfigProvider } from 'hmrc-odx-features-and-functions';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
@@ -26,6 +27,9 @@ describe('ViewAllDetails Component', () => {
     EstimatedPay: '202',
     AssignedTaxCode: '123',
     PayRollID: '1234',
+    EmploymentType: '',
+    NetCodedAllowance: '',
+    IntegerSortingHolder: 1,
     TESLinks: [
       {
         Content: [
@@ -93,13 +97,16 @@ describe('ViewAllDetails Component', () => {
       }
     ],
     PAYENumber: '12345',
-    EmploymentSequenceNumber: '1',
+    EmploymentSequenceNumber: 1,
     EstimatedPayInterruptionFlag: false
   };
 
   let t;
   const beginIntrruptionPage = jest.fn();
   const handleNavClick = jest.fn();
+  const handleUnderstandYourTaxCodeClick = jest.fn();
+  const mockApiCallback = jest.fn();
+
   afterEach(cleanup);
 
   beforeEach(async () => {
@@ -121,14 +128,17 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
 
     await act(async () => {
       t.result.current.i18n?.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -154,13 +164,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -190,13 +203,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -222,13 +238,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -255,13 +274,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('cy');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -288,13 +310,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('cy');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -337,13 +362,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -377,13 +405,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });
@@ -400,13 +431,16 @@ describe('ViewAllDetails Component', () => {
       redirectCurrentYearPage,
       handleLinkClick,
       beginIntrruptionPage,
-      handleNavClick
+      handleNavClick,
+      handleUnderstandYourTaxCodeClick
     };
     await act(async () => {
       t.result.current.i18n.changeLanguage('en');
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <ViewAllDetails {...viewAllDetailsProps} />
+          <AnalyticsConfigProvider apiCallback={mockApiCallback}>
+            <ViewAllDetails {...viewAllDetailsProps} />
+          </AnalyticsConfigProvider>
         </I18nextProvider>
       );
     });

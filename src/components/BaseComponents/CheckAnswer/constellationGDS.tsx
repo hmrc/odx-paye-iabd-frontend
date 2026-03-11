@@ -3,15 +3,13 @@ import type { PConnFieldProps } from '@pega/react-sdk-components/lib/types/PConn
 
 interface HmrcOdxTestProps extends PConnFieldProps {
   name?: string;
-  stepId?: any;
 }
 
 export default function GDSConstellationCheckAnswers(props: HmrcOdxTestProps) {
   const COMMA_DELIMITED_FIELD = 'CSV';
-  const { label, value, name, stepId, getPConnect, placeholder, helperText } = props;
+  const { label, value, name, placeholder, helperText } = props;
   const [formattedValue, setFormattedValue] = useState<string | string[]>(value ?? '');
-  const pConn = getPConnect();
-  const containerItemID = pConn.getContextName();
+
   let isCSV = false;
 
   if (name && name.includes(COMMA_DELIMITED_FIELD) && value?.includes(',')) {
@@ -25,34 +23,20 @@ export default function GDSConstellationCheckAnswers(props: HmrcOdxTestProps) {
     }
   }, []);
 
-  const handleOnClick = event => {
-    event.preventDefault();
-    const initialValue = '';
-    const isImplicit = false;
-    getPConnect().setValue('.NextStep', stepId, initialValue, isImplicit);
-    getPConnect().getActionsApi().finishAssignment(containerItemID);
-  };
-
   const isValueNotBlank =
     !!value && value !== ' ' && formattedValue !== 'Invalid Date' && value?.length > 0;
 
   const formattedValueOrValue = formattedValue || value;
   const placeholderOrHelperText = placeholder || helperText;
   const renderCYAValue = () =>
-    !isValueNotBlank ? (
-      <a href='#' className='govuk-link' onClick={handleOnClick} data-step-id={stepId}>
-        {placeholderOrHelperText}
-      </a>
-    ) : (
-      <>{formattedValueOrValue}</>
-    );
+    !isValueNotBlank ? <>{placeholderOrHelperText} </> : <>{formattedValueOrValue}</>;
 
   return (
     <>
       <style>{`
         .govuk-summary-list__row {
           display: grid;
-          grid-template-columns : minmax(14ch, 40ch) minmax(14ch, 1fr);
+          grid-template-columns : minmax(14ch, 39ch) minmax(14ch, 1fr);
           gap : calc(0.5rem) calc(1rem);
           width : 100%;
         }

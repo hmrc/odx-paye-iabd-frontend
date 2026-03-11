@@ -8,19 +8,21 @@ import {
 } from '../../../../components/helpers/utils';
 import { TimeLineEvent, TimeLineEvents } from '../../../../reuseables/Types/TimeLineEvents';
 import { useTranslation } from 'react-i18next';
+import RenderTimeLineEventHeading from './RenderTimeLineEventHeading';
 
 interface CurrentYearTimeLineProps {
   latestTimeLineEvents: TimeLineEvents;
   eventType: string;
-
   handleViewDetailsClick: (d: TimeLineEvent, s: string) => void;
 }
 const CurrentTimeLineEvent = (props: CurrentYearTimeLineProps) => {
   const { latestTimeLineEvents, eventType, handleViewDetailsClick } = props;
   const { t } = useTranslation();
   const lang = getCurrentLang();
-  const currentTimeLineEvents =
-    eventType === 'event' ? latestTimeLineEvents?.slice(0, 3) : latestTimeLineEvents;
+  const isShortEvent = eventType === 'event';
+  const currentTimeLineEvents = isShortEvent
+    ? latestTimeLineEvents?.slice(0, 3)
+    : latestTimeLineEvents;
   const getHelperText = (templateType: string) => {
     return templateType.toUpperCase() === 'TAXCODE' ? t('OFF') : t('OFF_THE');
   };
@@ -30,9 +32,10 @@ const CurrentTimeLineEvent = (props: CurrentYearTimeLineProps) => {
         className='hmrc-timeline__event'
         key={generateKey(currentEvent?.Content[0]?.pyKeyString, index, 'fullEvent')}
       >
-        <h2 className='hmrc-timeline__event-title'>
+        <RenderTimeLineEventHeading isShortEvent={isShortEvent}>
           {getHeadingContent(currentEvent?.Content, lang)?.Description}
-        </h2>
+        </RenderTimeLineEventHeading>
+
         {currentEvent?.DisplayDate && (
           <time className='hmrc-timeline__event-meta' dateTime={currentEvent.DisplayDate}>
             {formatDate(currentEvent.DisplayDate)}

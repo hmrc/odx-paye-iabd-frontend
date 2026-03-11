@@ -49,7 +49,7 @@ const renderField = resolvedProps => {
   return <FieldValueList variant={variant} fields={[{ name: label, value: val }]} />;
 };
 
-export const baseHmrcOdxGdsSummaryCard = () => {
+export const BaseHmrcOdxGdsSummaryCard = () => {
   const props = {
     template: 'DefaultForm',
     getPConnect: () => {

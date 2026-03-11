@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import createPConnectComponent from '@pega/react-sdk-components/lib/bridge/react_pconnect';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import StyledYourOrgRequiredDxilDetailsWrapper from './styles';
-
 // Duplicated runtime code from React SDK
 
 // props passed in combination of props from property panel (config.json) and run time props from Constellation

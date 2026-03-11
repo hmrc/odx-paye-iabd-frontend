@@ -18,36 +18,40 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
 
   const thePConn = getPConnect();
   const actionsApi = thePConn.getActionsApi();
-  const propName = (thePConn.getStateProps() as any).value;
+  const propName = (thePConn.getStateProps() as { value: string }).value;
   const { t } = useTranslation();
-  const [checked, setChecked] = useState<any>(false);
+  const [checked, setChecked] = useState<boolean>(false);
   const [clickable, setClickable] = useState(true);
+  const [overrideControl, setOverrideControl] = useState(false);
+  const OVERRIDE_CONTROL = 'overrideControl';
 
-  useEffect(() => {
-    setChecked(value);
-  }, [value]);
+  function handleBackClick(isValueTrue: boolean) {
+    if (isValueTrue) {
+      PCore.getPubSubUtils().publish('CUSTOM_EVENT_BACK', {});
+    } else {
+      setChecked(true);
+      handleEvent(actionsApi, 'changeNblur', propName, 'true');
 
-  useEffect(() => {
-    if (referenceList?.length > 0) {
-      thePConn.setReferenceList(selectionList);
-      updateNewInstuctions(thePConn, selectionList);
+      const continueButton = document.querySelector('.govuk-button') as HTMLElement;
+      if (continueButton) {
+        continueButton.click();
+      }
     }
-  }, [thePConn]);
+  }
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target.checked;
-    setChecked(isChecked);
-    handleEvent(actionsApi, 'changeNblur', propName, isChecked.toString());
-  };
+  function removeBackLink() {
+    // resetting Back button control on click of 'Continue'
+    sessionStorage.setItem('overrideControl', 'false');
 
-  useEffect(() => {
+    const existingBackLinks = document.querySelectorAll('.govuk-back-link');
+    existingBackLinks.forEach(link => link.remove());
+  }
+
+  function addBackLink(isValueTrue: boolean) {
     const assignmentDiv = document.getElementById('Assignment');
     const mainContent = document.getElementById('main-content');
-
+    removeBackLink();
     if (assignmentDiv && mainContent) {
-      const existingBackLinks = document.querySelectorAll('.govuk-back-link');
-      existingBackLinks.forEach(link => link.remove());
-
       const backLink = document.createElement('a');
       backLink.href = '#';
       backLink.className = 'govuk-back-link';
@@ -58,22 +62,73 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
         event.preventDefault();
         if (!clickable) return;
         setClickable(false);
-        if (value) {
-          PCore.getPubSubUtils().publish('CustomBackButton', {});
-        } else {
-          setChecked(true);
-          handleEvent(actionsApi, 'changeNblur', propName, 'true');
-
-          const continueButton = document.querySelector('.govuk-button') as HTMLElement;
-          if (continueButton) {
-            continueButton.click();
-          }
-        }
+        handleBackClick(isValueTrue);
       });
 
       assignmentDiv.insertAdjacentElement('beforebegin', backLink);
     }
-  }, [t, actionsApi, propName, clickable]);
+  }
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (overrideControl) return;
+    const isChecked = event.target.checked;
+    setChecked(isChecked);
+    handleEvent(actionsApi, 'changeNblur', propName, isChecked.toString());
+  };
+
+  useEffect(() => {
+    if (String(value) === 'true') {
+      // React control
+      setChecked(false);
+      setOverrideControl(true);
+      sessionStorage.setItem(OVERRIDE_CONTROL, 'true');
+      handleEvent(actionsApi, 'changeNblur', propName, 'false');
+      addBackLink(true);
+    } else {
+      // Pega control
+      if (sessionStorage.getItem(OVERRIDE_CONTROL) === 'true') return;
+      // Setting the states only if OVERRIDE_CONTROL is false.
+      // Can not be optimized by combining with true case logic as it's not re-rendering the component.
+      // Pega constellation replaces the component.
+      setOverrideControl(false);
+      sessionStorage.setItem(OVERRIDE_CONTROL, 'false');
+      addBackLink(false);
+    }
+  }, []);
+
+  function translateBackLinkText() {
+    const existingBackLinks = document.querySelectorAll('.govuk-back-link');
+
+    existingBackLinks.forEach(link => {
+      (link as HTMLElement).innerText = t('BACK');
+    });
+  }
+
+  useEffect(() => {
+    translateBackLinkText();
+  }, [t]);
+
+  useEffect(() => {
+    if (referenceList?.length > 0) {
+      thePConn.setReferenceList(selectionList);
+      updateNewInstuctions(thePConn, selectionList);
+    }
+  }, [thePConn]);
+
+  useEffect(() => {
+    PCore.getPubSubUtils().subscribe(
+      'CUSTOM_EVENT_PAGE_NAVIGATION',
+      () => removeBackLink(),
+      'CUSTOM_EVENT_PAGE_NAVIGATION'
+    );
+
+    return () => {
+      PCore.getPubSubUtils().unsubscribe(
+        'CUSTOM_EVENT_PAGE_NAVIGATION',
+        'CUSTOM_EVENT_PAGE_NAVIGATION'
+      );
+    };
+  }, []);
 
   const theCheckbox = (
     <FormControlLabel
@@ -82,7 +137,6 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
           id='GoBackCheckBox'
           color='primary'
           checked={checked}
-          className='govuk-visually-hidden'
           onChange={!readOnly ? handleCheckboxChange : undefined}
           value={value}
           disabled={disabled}
@@ -92,7 +146,6 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
         />
       }
       label={caption}
-      className='govuk-visually-hidden'
       labelPlacement='end'
       data-test-id={testId}
       aria-hidden='true'
@@ -102,8 +155,8 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
 
   return (
     <div className='govuk-visually-hidden' aria-hidden='true' tabIndex={-1}>
-      <FormGroup className='govuk-visually-hidden' tabIndex={-1} aria-hidden='true'>
-        {theCheckbox}
+      <FormGroup tabIndex={-1} aria-hidden='true'>
+        {!overrideControl && theCheckbox}
       </FormGroup>
     </div>
   );

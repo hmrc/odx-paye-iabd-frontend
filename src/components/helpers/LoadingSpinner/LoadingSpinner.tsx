@@ -1,5 +1,16 @@
-import React from 'react';
+import React, { ElementType } from 'react';
 import PropTypes from 'prop-types';
+
+export interface LoadingSpinnerProps {
+  size?: string;
+  topTag?: ElementType;
+  bottomTag?: ElementType;
+  topText?: string;
+  label?: string;
+  bottomText?: string;
+  borderColor?: string;
+  topBorderColor?: string;
+}
 
 const LoadingSpinner = ({
   size,
@@ -10,7 +21,7 @@ const LoadingSpinner = ({
   bottomTag,
   borderColor,
   topBorderColor
-}) => {
+}: LoadingSpinnerProps) => {
   const TopHeaderTag = topTag || 'h1';
   const BottomTextTag = bottomTag || 'h1';
   const AccLabel = label || 'loading';

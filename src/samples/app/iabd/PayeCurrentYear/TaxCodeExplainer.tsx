@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatCurrency, generateKey, getTaxCode } from '../../../../components/helpers/utils';
+import { formatCurrency, generateKey, formatTaxCode } from '../../../../components/helpers/utils';
 import ExplainerComponent from './ExplainerComponent';
 
 interface TaxCodeExplainerProps {
@@ -10,13 +10,18 @@ interface TaxCodeExplainerProps {
   issuedTaxCode: string;
 }
 
-const TaxCodeExplainer = ({ taxCode, netCodedAllowance, isActivePension, issuedTaxCode }: TaxCodeExplainerProps) => {
+const TaxCodeExplainer = ({
+  taxCode,
+  netCodedAllowance,
+  isActivePension,
+  issuedTaxCode
+}: TaxCodeExplainerProps) => {
   const { t } = useTranslation();
 
   return (
     <details className='govuk-details'>
       <summary className='govuk-details__summary'>
-        <span className='govuk-details__summary-text'>{`${t('WHAT')} ${getTaxCode(issuedTaxCode)} ${t('MEANS')}`}</span>
+        <span className='govuk-details__summary-text'>{`${t('WHAT')} ${formatTaxCode(issuedTaxCode)} ${t('MEANS')}`}</span>
       </summary>
       <div className='govuk-details__text'>
         {taxCode?.length > 0

@@ -1,18 +1,26 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
-import { getServiceShutteredStatus, scrollToTop, shouldRemoveFormTagForReadOnly } from '../../../helpers/utils';
+import {
+  getServiceShutteredStatus,
+  scrollToTop,
+  shouldRemoveFormTagForReadOnly
+} from '../../../helpers/utils';
 import ErrorSummary from '../../../BaseComponents/ErrorSummary/ErrorSummary';
-import { DateErrorFormatter, DateErrorTargetFields } from '../../../helpers/formatters/DateErrorFormatter';
+import {
+  DateErrorFormatter,
+  DateErrorTargetFields
+} from '../../../helpers/formatters/DateErrorFormatter';
 import setPageTitle from '../../../helpers/setPageTitleHelpers';
 import { SdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helpers/sdk_component_map';
 import useIsOnlyField from '../../../helpers/hooks/QuestionDisplayHooks';
 import MainWrapper from '../../../BaseComponents/MainWrapper';
-import ShutterServicePage from '../../../../components/AppComponents/ShutterServicePage';
+
 import { ErrorMsgContext } from '../../../helpers/HMRCAppContext';
 import useServiceShuttered from '../../../helpers/hooks/useServiceShuttered';
 import StoreContext from '@pega/react-sdk-components/lib/bridge/Context/StoreContext';
 import { useTranslation } from 'react-i18next';
+import ShutterServicePage from '../../../AppComponents/ShutterService/ShutterServicePage';
 
 export interface ErrorMessageDetails {
   message: string;
@@ -33,9 +41,8 @@ export default function Assignment(props) {
   const thePConn = getPConnect();
   const [actionButtons, setActionButtons] = useState<any>({});
   const { t } = useTranslation();
-  const serviceShuttered = useServiceShuttered();
+  const {serviceShuttered, isLoading} = useServiceShuttered();
   const { setAssignmentPConnect }: any = useContext(StoreContext);
-
   const AssignmentCard = SdkComponentMap.getLocalComponentMap().AssignmentCard
     ? SdkComponentMap.getLocalComponentMap().AssignmentCard
     : SdkComponentMap.getPegaProvidedComponentMap().AssignmentCard;
@@ -44,7 +51,8 @@ export default function Assignment(props) {
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
 
   const localeCategory = 'Assignment';
-  const localeReference = `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect().getCaseInfo().getName()}`.toUpperCase();
+  const localeReference =
+    `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect().getCaseInfo().getName()}`.toUpperCase();
 
   // store off bound functions to above pointers
   const finishAssignment = actionsAPI.finishAssignment.bind(actionsAPI);
@@ -70,7 +78,8 @@ export default function Assignment(props) {
   }, [serviceShuttered]);
 
   const callLocalActionSilently = async () => {
-    const { invokeRestApi, invokeCustomRestApi, getCancelTokenSource, isRequestCanceled } = PCore.getRestClient();
+    const { invokeRestApi, invokeCustomRestApi, getCancelTokenSource, isRequestCanceled } =
+      PCore.getRestClient();
     const cancelTokenSource = getCancelTokenSource();
     const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
     const LOCAL_ACTION_NAME = lang === 'en' ? 'SwitchLanguageToEnglish' : 'SwitchLanguageToWelsh';
@@ -116,10 +125,12 @@ export default function Assignment(props) {
   async function refreshView() {
     // this will refresh the case view and load all required translations
     try {
-      await thePConn.getActionsApi().refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
-        autoDetectRefresh: true
-      });
       await callLocalActionSilently();
+      await thePConn
+        .getActionsApi()
+        .refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
+          autoDetectRefresh: true
+        });
       // emit this event to reload the react component forcefully
       PCore.getPubSubUtils().publish('forceRefreshRootComponent');
     } catch (error) {
@@ -129,8 +140,16 @@ export default function Assignment(props) {
   }
 
   useEffect(() => {
-    PCore.getPubSubUtils().subscribe('languageToggleTriggered', refreshView, 'languageToggleTriggered');
-    PCore.getPubSubUtils().subscribe('callLocalActionSilently', callLocalActionSilently, 'callLocalActionSilently');
+    PCore.getPubSubUtils().subscribe(
+      'languageToggleTriggered',
+      refreshView,
+      'languageToggleTriggered'
+    );
+    PCore.getPubSubUtils().subscribe(
+      'callLocalActionSilently',
+      callLocalActionSilently,
+      'callLocalActionSilently'
+    );
 
     return () => {
       PCore.getPubSubUtils().unsubscribe('languageToggleTriggered', 'languageToggleTriggered');
@@ -182,10 +201,11 @@ export default function Assignment(props) {
     const errorStateProps = [];
 
     const formFields = PCore.getContextTreeManager().getFieldsList(context);
-    const processName = PCore.getStore().getState().data[context].caseInfo.assignments[0].processName;
+    const processName =
+      PCore.getStore().getState().data[context].caseInfo.assignments[0].processName;
 
-    for (const [key, value] of formFields) {
-      const { propertyName, pageReference, componentName: type, label, index: displayOrder } = value.props;
+    for (const [, value] of formFields) {
+      const { propertyName, pageReference, componentName: type, index: displayOrder } = value.props;
 
       const errorMessagesList = PCore.getMessageManager().getMessages({
         property: propertyName,
@@ -198,14 +218,19 @@ export default function Assignment(props) {
 
       if (errorMessagesList.length > 0) {
         errorMessagesList.forEach(error => {
-          validateMessage = validateMessage + (validateMessage.length > 0 ? '. ' : '') + localizedVal(error.message, 'Messages');
+          validateMessage =
+            validateMessage +
+            (validateMessage.length > 0 ? '. ' : '') +
+            localizedVal(error.message, 'Messages');
         });
       }
 
       // eslint-disable-next-line no-continue
       if (!validateMessage) continue;
 
-      const formattedPropertyName = propertyName.includes('.') ? propertyName.split('.').pop() : null;
+      const formattedPropertyName = propertyName.includes('.')
+        ? propertyName.split('.').pop()
+        : null;
       let fieldId = formattedPropertyName;
 
       if (type === 'Date') {
@@ -263,6 +288,26 @@ export default function Assignment(props) {
     }
   }, [children]);
 
+  useEffect(() => {
+    PCore?.getPubSubUtils().subscribe(
+      'CUSTOM_EVENT_CYA_CHANGE_INITIATED',
+      async responseCallback => {
+        const serviceStatusResponse = await getServiceShutteredStatus();
+
+        responseCallback.resolve(serviceStatusResponse);
+
+        setServiceShutteredStatus(serviceStatusResponse);
+      },
+      'CUSTOM_EVENT_CYA_CHANGE_INITIATED'
+    );
+    return () => {
+      PCore.getPubSubUtils().unsubscribe(
+        'CUSTOM_EVENT_CYA_CHANGE_INITIATED',
+        'CUSTOM_EVENT_CYA_CHANGE_INITIATED'
+      );
+    };
+  }, []);
+
   function showErrorSummary() {
     setErrorMessages([]);
     checkErrorMessages();
@@ -270,11 +315,19 @@ export default function Assignment(props) {
 
   function onSaveActionSuccess(data) {
     actionsAPI.cancelAssignment(itemKey).then(() => {
-      PCore.getPubSubUtils().publish(PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED, data);
+      PCore.getPubSubUtils().publish(
+        PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED,
+        data
+      );
     });
   }
 
   async function buttonPress(sAction: string, sButtonType: string) {
+    const serviceStatusResponse = await getServiceShutteredStatus();
+    if (serviceStatusResponse) {
+      PCore.getPubSubUtils().publish('CUSTOM_EVENT_PAGE_NAVIGATION'); // Triggering an event on page navigation
+    }
+
     if (sButtonType === 'secondary') {
       switch (sAction) {
         case 'navigateToStep': {
@@ -301,7 +354,9 @@ export default function Assignment(props) {
 
           savePromise
             .then(() => {
-              const caseType = thePConn.getCaseInfo().c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
+              const caseType = thePConn
+                .getCaseInfo()
+                .c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
               onSaveActionSuccess({ caseType, caseID, assignmentID });
               scrollToTop();
             })
@@ -388,7 +443,8 @@ export default function Assignment(props) {
       if (dateField) {
         dateField?.forEach(field => {
           const childPagRef = childPconnect.getPageReference();
-          const pageRef = thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
+          const pageRef =
+            thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
           const storedRefName = field.name?.replace(pageRef, '');
           const storedDateValue = childPconnect.getValue(`.${storedRefName}`);
           if (!dayjs(storedDateValue, 'YYYY-MM-DD', true).isValid()) {
@@ -401,15 +457,15 @@ export default function Assignment(props) {
 
   useEffect(() => {
     PCore.getPubSubUtils().subscribe(
-      'CustomBackButton',
+      'CUSTOM_EVENT_BACK',
       () => {
         handleBackLinkforInvalidDate();
       },
-      'CustomBackButton'
+      'CUSTOM_EVENT_BACK'
     );
 
     return function cleanup() {
-      PCore.getPubSubUtils().unsubscribe('CustomBackButton');
+      PCore.getPubSubUtils().unsubscribe('CUSTOM_EVENT_BACK');
     };
   }, []);
 
@@ -435,19 +491,6 @@ export default function Assignment(props) {
 
   const shouldRemoveFormTag = shouldRemoveFormTagForReadOnly(containerName);
 
-  const pageID = thePConn.getCaseInfo().c11nEnv._stateProps.assignmentNames?.[0];
-
-  if (pageID === 'SelectEmployment' || pageID === 'Select Provider') {
-    const existingBackLink = document.getElementById('dynamic-back-link');
-    if (existingBackLink) {
-      existingBackLink.remove();
-    }
-    const existingOriginalBackLink = document.getElementsByClassName('govuk-back-link');
-    if (existingOriginalBackLink.length > 0) {
-      Array.from(existingOriginalBackLink).forEach(backLink => backLink.remove());
-    }
-  }
-
   const caseID = caseInfo.caseTypeID;
 
   const serviceNameMap = {
@@ -465,20 +508,27 @@ export default function Assignment(props) {
         <ShutterServicePage />
       ) : (
         <div id='Assignment'>
-          <MainWrapper>
+          <MainWrapper title={t(subServiceName, { lng: 'en' })}>
             {errorMessages.length > 0 && (
-              <ErrorSummary errors={errorMessages.map(item => localizedVal(item.message, localeCategory, localeReference))} />
+              <ErrorSummary
+                errors={errorMessages.map(item =>
+                  localizedVal(item.message, localeCategory, localeReference)
+                )}
+              />
             )}
-            <h2 className='govuk-caption-l hmrc-caption-l govuk-msn'>{t(`${subServiceName}`)}</h2>
+            <h2 className='govuk-caption-l hmrc-caption-l'>
+              <span className='govuk-visually-hidden'> {t('THIS_SECTION_IS')}</span>
+              {t(`${subServiceName}`)}
+            </h2>
 
             {(!isOnlyFieldDetails.isOnlyField ||
               containerName?.toLowerCase().includes('check your answer') ||
               containerName?.toLowerCase().includes('declaration')) && (
-              <h1 className='govuk-heading-l'>{localizedVal(containerName, 'Assignment', '@BASECLASS!GENERIC!PYGENERICFIELDS')}</h1>
+              <h1 className='govuk-heading-l' style={{ marginBlockStart: '1rem' }}>
+                {localizedVal(containerName, 'Assignment', '@BASECLASS!GENERIC!PYGENERICFIELDS')}
+              </h1>
             )}
             {shouldRemoveFormTag ? renderAssignmentCard() : <form>{renderAssignmentCard()}</form>}
-
-            <br />
           </MainWrapper>
         </div>
       )}

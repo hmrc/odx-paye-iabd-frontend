@@ -210,7 +210,9 @@ describe('Tax Code actual explainer component', () => {
     });
 
     expect(
-      screen.getByText('Your tax-free amount for this employment or pension is .')
+      screen.getByText("Eich swm sy'n rhydd o dreth ar gyfer y gyflogaeth neu'r pensiwn hwn yw", {
+        exact: false
+      })
     ).toBeInTheDocument();
   });
 });

@@ -32,7 +32,7 @@ window.PCore.getUserApi = () => {
   };
 };
 
-export const baseHmrcOdxGdsTaskList = () => {
+export const BaseHmrcOdxGdsTaskList = () => {
   const props = {
     label: configProps.label,
     createLabel: configProps.createLabel,

@@ -1,13 +1,21 @@
-import { cleanup } from '@testing-library/react';
+import { act, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { generateKey, getCurrentLang, getHeadingContent, truncate } from './utils';
+import {
+  formatCurrency,
+  generateKey,
+  getCurrentLang,
+  getHeadingContent,
+  triggerLogout,
+  truncate
+} from './utils';
 import { mockGetSdkConfigWithBasepath } from '../../../tests/mocks/getSdkConfigMock';
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn()
 }));
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
-  getSdkConfig: jest.fn()
+  getSdkConfig: jest.fn(),
+  logout: jest.fn().mockResolvedValue({})
 }));
 describe('getCurrentLang util function', () => {
   const sessionStorageMock = (() => {
@@ -96,5 +104,64 @@ describe('generateKey util function', () => {
     const index = 1;
     const employer = '';
     expect(generateKey(name, index, employer)).toBe('mock name_1_');
+  });
+});
+
+describe('triggerLogout utils function', () => {
+  mockGetSdkConfigWithBasepath();
+
+  (window as any).PCore = {
+    getContainerUtils: jest.fn(() => ({
+      getActiveContainerItemContext: jest.fn(),
+      closeContainerItem: jest.fn(),
+      getDataPageUtils: jest.fn()
+    })),
+    getDataPageUtils: jest.fn(() => ({
+      getPageDataAsync: jest.fn().mockResolvedValue({ URLResourcePath2: 'feedback' })
+    }))
+  };
+
+  Object.defineProperty(window, 'location', {
+    value: { href: 'signout' },
+    writable: true
+  });
+
+  test('verify triggerLogout for signout click', async () => {
+    await act(async () => {
+      triggerLogout(false);
+    });
+
+    expect(PCore.getContainerUtils).toHaveBeenCalled();
+    expect(PCore.getDataPageUtils).toHaveBeenCalled();
+    expect(window.location.href).toBe('feedback');
+  });
+});
+
+describe('formatCurrency util function', () => {
+  test('should format number to currency with variable decimal places', () => {
+    expect(formatCurrency(1234.5)).toBe('£1,234.50');
+    expect(formatCurrency(1234)).toBe('£1,234.00');
+    expect(formatCurrency(0)).toBe('£0.00');
+  });
+
+  test('should format string to currency with variable decimal places', () => {
+    expect(formatCurrency('1234.5')).toBe('£1,234.50');
+  });
+
+  test('should handle undefined, NaN and null values', () => {
+    expect(formatCurrency(undefined)).toBe('');
+    expect(formatCurrency(null)).toBe('');
+    expect(formatCurrency(NaN)).toBe('£0.00');
+    expect(formatCurrency('')).toBe('£0.00');
+  });
+
+  test('should truncate to whole number', () => {
+    expect(formatCurrency(1234.3278, true)).toBe('£1,234');
+    expect(formatCurrency(1234.9999, true)).toBe('£1,235');
+  });
+
+  test('should replace - with − for negative numbers', () => {
+    expect(formatCurrency(-1234.56)).toBe('−£1,234.56');
+    expect(formatCurrency('-1234.56')).toBe('−£1,234.56');
   });
 });
